@@ -13,7 +13,8 @@ enum ErrorType {
     NotANumber,
     OutOfRange,
     NotTxtExtension,
-    BadFile
+    BadFile,
+    TooManyNumbersInFile
 };
 uint32_t trap(const vector<uint32_t>& height, string& wall_drawing);
 void writeInFile(const string &file_path, uint32_t water, const string& walls);

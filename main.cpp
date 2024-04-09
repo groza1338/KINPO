@@ -41,6 +41,9 @@ int main(int argc, char* argv[]) {
         case ErrorType::BadFile:
             cerr << "Ошибка: Неверно указан файл с входными данными. Возможно, файл не существует.";
             break;
+        case ErrorType::TooManyNumbersInFile:
+            cerr << "Ошибка: Во входном файле слишком много чисел - " << invalid_word << endl;
+            break;
         case ErrorType::NoError:
             // Записываем результат в выходной файл
             string wall;
@@ -151,43 +154,51 @@ ErrorType readFromFile(const string& file_path, string& invalid_word, vector<uin
 
     string line;
     uint8_t line_count = 0;
+    uint32_t numbers_count = 0;
     while (getline(input_file, line)){
         line_count++;
         if (line_count > 1){
             input_file.close();
             return ErrorType::ManyLinesInInputFile;
         }
-    }
-
-    istringstream iss(line);
-    string word;
-    // Читаем данные из файла
-    while (iss >> word) {
-        try {
-            size_t pos;
-            int64_t number = stoul(word, &pos);
-            // Проверяем, не выходит ли число за пределы допустимого диапазона
-            if (number > numeric_limits<uint32_t>::max()) {
+        istringstream iss(line);
+        string word;
+        while (iss >> word) {
+            try {
+                size_t pos;
+                int64_t number = stoul(word, &pos);
+                // Проверяем, не выходит ли число за пределы допустимого диапазона
+                if (number > numeric_limits<uint32_t>::max()) {
+                    invalid_word = word;
+                    input_file.close();
+                    return ErrorType::OutOfRange;
+                }
+                if (number < numeric_limits<uint32_t>::min()){
+                    invalid_word = word;
+                    input_file.close();
+                    return ErrorType::OutOfRange;
+                }
+                numbers.push_back(number);
+                numbers_count++;
+                if (numbers_count > 100) {
+                    input_file.close();
+                    ostringstream oss;
+                    oss << numbers_count;
+                    invalid_word = oss.str();
+                    return ErrorType::TooManyNumbersInFile;
+                }
+            } catch (const std::invalid_argument& e) {
+                // Если встречено некорректное слово, возвращаем соответствующую ошибку
                 invalid_word = word;
                 input_file.close();
-                return ErrorType::OutOfRange;
+                return ErrorType::NotANumber;
             }
-            if (number < numeric_limits<uint32_t>::min()){
-                invalid_word = word;
-                input_file.close();
-                return ErrorType::OutOfRange;
-            }
-            numbers.push_back(number);
-        } catch (const std::invalid_argument& e) {
-            // Если встречено некорректное слово, возвращаем соответствующую ошибку
-            invalid_word = word;
-            input_file.close();
-            return ErrorType::NotANumber;
         }
     }
     input_file.close();
     return ErrorType::NoError;
 }
+
 
 
 
