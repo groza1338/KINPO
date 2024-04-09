@@ -1,5 +1,9 @@
 #include "Header.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++17-extensions"
+#pragma clang diagnostic ignored "-Wc++11-extensions"
+
 int main(int argc, char* argv[]) {
     string input_file, output_file;
 
@@ -16,16 +20,6 @@ int main(int argc, char* argv[]) {
         output_file = argv[2];
     }
 
-    // Проверяем, имеют ли файлы правильное расширение
-    if (!(hasTxtExtension(input_file))){
-        cerr << input_file << " не является допустимым форматом" << endl;
-        return 1;
-    }
-    if (!hasTxtExtension(output_file)){
-        cerr << output_file << " не является допустимым форматом" << endl;
-        return 1;
-    }
-
     // Создаем вектор для хранения высот стен
     vector<u_int32_t> numbers;
     string invalid_word;
@@ -33,30 +27,44 @@ int main(int argc, char* argv[]) {
     ErrorType error = readFromFile(input_file, invalid_word, numbers);
     switch (error) {
         case ErrorType::OutOfRange:
-            cerr << "Ошибка: Число " <<invalid_word<< " вне допустимого диапазона [0..4294967295]" << endl;
+            cerr << "Ошибка: Входной параметр \"" << invalid_word << "\" не принадлежит диапазону [0..4294967295]." << endl;
             break;
         case ErrorType::NotANumber:
-            cerr << "Ошибка: Найдено слово - " << invalid_word << endl;
+            cerr << "Ошибка: Входной параметр \"" << invalid_word << "\" не является натуральным числом" << endl;
+            break;
+        case ErrorType::ManyLinesInInputFile:
+            cerr << "Ошибка: Во входном файле несколько строк." << endl;
+            break;
+        case ErrorType::NotTxtExtension:
+            cerr << "Ошибка: Недопустимое расширение файла \"" << invalid_word << "\"\nДопустимое расширение: \".txt\"" << endl;
+            break;
+        case ErrorType::BadFile:
+            cerr << "Ошибка: Неверно указан файл с входными данными. Возможно, файл не существует.";
             break;
         case ErrorType::NoError:
             // Записываем результат в выходной файл
-            writeInFile(output_file, trap(numbers));
+            string wall;
+            writeInFile(output_file, trap(numbers, wall), wall);
             break;
     }
     return 0;
 }
 
 
+#include <vector>
+#include <string>
+
+using namespace std;
+
 /**
  * @brief Функция trap вычисляет количество воды, которое может быть удержано между стенами.
- *
- * Эта функция реализует алгоритм, основанный на поиске максимальных высот стен слева и справа от каждой стены,
- * чтобы определить количество воды, которое может быть удержано над каждой стеной.
+ * Также создает рисунок стены и воды.
  *
  * @param height Массив высот стен.
+ * @param[out] wall_drawing Рисунок стены и воды.
  * @return Количество воды, которое может быть удержано между стенами.
  */
-uint32_t trap(const vector<uint32_t>& height) {
+uint32_t trap(const vector<uint32_t>& height, string& wall_drawing) {
     uint8_t n = height.size();
     if (n == 0) return 0; // Если массив пустой, возвращаем 0
 
@@ -76,11 +84,45 @@ uint32_t trap(const vector<uint32_t>& height) {
 
     uint32_t water_trapped = 0;
     // Находим объем воды, который может быть удержан над каждой стеной
-    for (int i = 0; i < n; ++i) {
-        water_trapped += min(max_left[i], max_right[i]) - height[i]; // Вычисляем количество воды над каждой стеной и суммируем
+    wall_drawing = "";
+    for (int row = max(*max_element(height.begin(), height.end()), 1U); row >= 1; --row) {
+        string row_str = "";
+        for (int col = 0; col < n; ++col) {
+            if (height[col] >= row) {
+                row_str += "# ";
+            } else if ((col > 0 && height[col - 1] >= row) && (col < n - 1 && height[col + 1] >= row)) {
+                row_str += "~ ";
+                ++water_trapped;
+            } else {
+                row_str += "  ";
+            }
+        }
+        wall_drawing += row_str + "\n";
     }
 
     return water_trapped;
+}
+
+/**
+ * @brief Функция getFileExtension извлекает расширение файла из переданного имени файла.
+ *
+ * Эта функция находит позицию последней точки в имени файла и извлекает подстроку,
+ * начиная с позиции после последней точки, что позволяет определить расширение файла.
+ *
+ * @param filename Имя файла.
+ * @return Расширение файла, включая точку (например, ".txt"), или пустая строка, если расширение отсутствует.
+ */
+string getFileExtension(const string& filename) {
+    // Находим позицию последней точки в строке
+    size_t lastDotPos = filename.find_last_of('.');
+    // Если точка не найдена, значит расширение отсутствует
+    if (lastDotPos == string::npos) {
+        return "";
+    } else {
+        // Извлекаем подстроку, начиная с позиции после последней точки
+        string extension = '.' + filename.substr(lastDotPos + 1);
+        return extension;
+    }
 }
 
 
@@ -96,15 +138,26 @@ uint32_t trap(const vector<uint32_t>& height) {
  * @return ErrorType Тип ошибки (если есть) или NoError, если ошибок не было.
  */
 ErrorType readFromFile(const string& file_path, string& invalid_word, vector<uint32_t>& numbers) {
+    // Проверяем, имеет ли файл правильное расширение
+    if (const auto extension = getFileExtension(file_path); extension != ".txt") {
+        invalid_word = extension;
+        return ErrorType::NotTxtExtension;
+    }
     ifstream input_file(file_path);
     // Проверяем, успешно ли открыт файл
     if (!input_file) {
-        cerr << "Ошибка: Не удалось открыть файл для чтения!" << endl;
-        return ErrorType::NoError;
+        return ErrorType::BadFile;
     }
 
     string line;
-    getline(input_file, line);
+    uint8_t line_count = 0;
+    while (getline(input_file, line)){
+        line_count++;
+        if (line_count > 1){
+            input_file.close();
+            return ErrorType::ManyLinesInInputFile;
+        }
+    }
 
     istringstream iss(line);
     string word;
@@ -144,39 +197,48 @@ ErrorType readFromFile(const string& file_path, string& invalid_word, vector<uin
  * Эта функция открывает указанный файл для записи и записывает в него переданные данные.
  *
  * @param file_path Путь к файлу для записи.
- * @param data Данные, которые будут записаны в файл.
+ * @param water Данные, которые будут записаны в файл.
  */
-void writeInFile(const string &file_path, const uint32_t data) {
+void writeInFile(const string &file_path, const uint32_t water, const string& walls) {
     ofstream output_file(file_path);
     if (!output_file) {
-        cerr << "Не удалось открыть файл для записи!" << endl;
+        cerr << "Ошибка: Неверно указан файл для выходных данных. Возможно, указанного расположения не существует или нет прав на запись." << endl;
         return;
     }
 
-    output_file << data; // Записываем данные в файл
+    output_file << water << endl << walls; // Записываем данные в файл
     output_file.close(); // Закрываем файл
     cout << "Успех!" << endl;
 }
 
-
 /**
- * @brief Проверяет, имеет ли файл расширение .txt.
+ * @brief Функция drawWall рисует стену и воду между стенами в соответствии с заданными высотами.
  *
- * @param filename Имя файла.
- * @return true, если имя файла имеет расширение .txt, в противном случае - false.
+ * @param heights Вектор высот стен.
  */
-bool hasTxtExtension(const string& filename) {
-    // Получаем длину строки
-    size_t length = filename.length();
+void drawWall(const vector<u_int32_t>& heights) {
+    // Находим максимальную высоту стены
+    int64_t maxHeight = *max_element(heights.begin(), heights.end());
 
-    // Если длина строки меньше 4 символов, то она не может содержать расширение .txt
-    if (length < 4) {
-        return false;
+    // Перебираем строки от верхней до нижней
+    for (int64_t row = maxHeight; row >= 0; --row) {
+        // Перебираем столбцы
+        for (int col = 0; col < heights.size(); ++col) {
+            // Если высота текущей стены больше текущей строки, рисуем стену, иначе рисуем воду
+            if (heights[col] > row) {
+                cout << "# ";
+            } else {
+                // Если справа и слева есть стены выше текущей строки, рисуем воду, иначе пустое место
+                if ((col > 0 && heights[col - 1] > row) && (col < heights.size() - 1 && heights[col + 1] > row)) {
+                    cout << "~ ";
+                } else {
+                    cout << "  ";
+                }
+            }
+        }
+        cout << endl; // Переходим на следующую строку
     }
-
-    // Получаем подстроку с последних четырех символов
-    string extension = filename.substr(length - 4);
-
-    // Сравниваем полученную подстроку с .txt
-    return extension == ".txt";
 }
+
+
+#pragma clang diagnostic pop

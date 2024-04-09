@@ -1,69 +1,70 @@
 #include <iostream>
 #include <vector>
-#include <chrono>
 
 using namespace std;
-using namespace std::chrono;
 
-// Функция для нахождения всех возможных комбинаций сумм натуральных чисел
-void findCombinations(int n) {
-    // Стек для хранения текущей комбинации
-    vector<int> stack;
+// Функция предназначенная для нахождения всех уникальных сумм натуральных чисел, которые равны начальному натуральному числу.
+vector<vector<int>> findSumCombinations(int N)
+{
+    // Инициализируем вектор, содержащий все возможные комбинации натуральных чисел
+    vector<vector<vector<int>>> sumCombination (N + 1);
 
-    // Итеративный процесс для поиска комбинаций
-    while (true) {
-        int sum = 0;
-        for (int num : stack) {
-            sum += num;
-        }
+    sumCombination[0] = { {} };
 
-        // Если сумма равна n, выводим комбинацию
-        if (sum == n) {
-            cout << "{";
-            for (int i = 0; i < stack.size(); ++i) {
-                if (i > 0) {
-                    cout << ", ";
+    // Для каждого числа в диапазоне от 1 до данного натурального числа
+    for (int i = 1; i <= N; ++i) {
+        // Для каждого числа из диапазона находим комбинации сумм чисел, дающих сумму равную текущему числу
+        for (int j = i; j <= N; ++j) {
+            // Для каждой комбинации, дающей сумму равной (j - i)
+            for (auto& comb : sumCombination[j - i]) {
+                // Если комбинация пустая или последнее число меньше или равно текущему рассматриваему числу
+                if (comb.empty() || comb.back() <= i) {
+                    // Добавляем комбинацию (j - i) с числом i в sumCombination[j]
+                    sumCombination[j].push_back(comb);
+                    sumCombination[j].back().push_back(i);
                 }
-                cout << stack[i];
             }
-            cout << "}\n";
         }
+    }
 
-        // Находим следующее число для добавления в комбинацию
-        int next = (stack.empty() ? 1 : stack.back() + 1);
+    // Возвращаем все комбинации, дающие сумму N
+    return sumCombination[N];
+}
 
-        // Если следующее число больше n или стек пуст, завершаем процесс
-        if (next > n || stack.empty()) {
-            if (stack.empty()) {
-                // Если стек пуст, значит мы проверили все возможные комбинации
-                break;
-            } else {
-                // Удаляем последний элемент из стека и пробуем следующее число
-                next = stack.back() + 1;
-                stack.pop_back();
+void printCombinations(const vector<vector<int>>& combinations) {
+    // Перебираем все комбинации в обратном порядке
+    for (int i = combinations.size() - 1; i >= 0; --i) {
+        // Выводим открывающую фигурную скобку перед каждой комбинацией
+        cout << "{";
+
+        // Выводим каждую комбинацию в обратном порядке
+        for (int j = combinations[i].size() - 1; j >= 0; --j) {
+            cout << combinations[i][j];
+            // Добавляем запятую после каждого числа, кроме последнего
+            if (j != 0) {
+                cout << ", ";
             }
-        } else {
-            // Добавляем следующее число в стек
-            stack.push_back(next);
         }
+        // Выводим закрывающую фигурную скобку после каждой комбинации
+        cout << "}";
+
+        // Выводим закрывающую фигурную скобку после каждой комбинации
+        cout << "\n";
     }
 }
 
+
 int main() {
-    // Ввод числа N
-    int n;
-    cout << "Введите натуральное число N: ";
-    cin >> n;
+    // Запрос у пользователя натурального числа N
+    int N;
+    cout << "Input number N (1 <= N <= 100): ";
+    cin >> N;
 
-    auto start = high_resolution_clock::now();
+    // Находим все возможные комбинации сумм чисел, дающих сумму N
+    vector<vector<int>> combinations = findSumCombinations(N);
 
-    // Поиск и вывод комбинаций
-    findCombinations(n);
-
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
-
-    cout << "Время выполнения: " << duration.count() << " микросекунд" << endl;
+    // Выводим все комбинации
+    printCombinations(combinations);
 
     return 0;
 }
