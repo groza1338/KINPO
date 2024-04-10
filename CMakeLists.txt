@@ -4,5 +4,5 @@ project(Gvozdkov)
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(Gvozdkov
-        test.cpp
+        main.cpp, Header.h
 )

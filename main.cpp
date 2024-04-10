@@ -42,12 +42,12 @@ int main(int argc, char* argv[]) {
             cerr << "Ошибка: Неверно указан файл с входными данными. Возможно, файл не существует.";
             break;
         case ErrorType::TooManyNumbersInFile:
-            cerr << "Ошибка: Во входном файле слишком много чисел - " << invalid_word << endl;
+            cerr << "Ошибка: Во входном файле слишком много чисел, убедитесь, что их <= 100" << endl;
             break;
         case ErrorType::NoError:
             // Записываем результат в выходной файл
-            string wall;
-            writeInFile(output_file, trap(numbers, wall), wall);
+            string wallSchema;
+            writeInFile(output_file, calculateWaterVolume(numbers, wallSchema), wallSchema);
             break;
     }
     return 0;
@@ -60,14 +60,14 @@ int main(int argc, char* argv[]) {
 using namespace std;
 
 /**
- * @brief Функция trap вычисляет количество воды, которое может быть удержано между стенами.
+ * @brief Функция calculateWaterVolume вычисляет количество воды, которое может быть удержано между стенами.
  * Также создает рисунок стены и воды.
  *
  * @param height Массив высот стен.
  * @param[out] wall_drawing Рисунок стены и воды.
  * @return Количество воды, которое может быть удержано между стенами.
  */
-uint32_t trap(const vector<uint32_t>& height, string& wall_drawing) {
+uint32_t calculateWaterVolume(const vector<uint32_t>& height, string& wall_drawing) {
     uint8_t n = height.size();
     if (n == 0) return 0; // Если массив пустой, возвращаем 0
 
@@ -88,8 +88,8 @@ uint32_t trap(const vector<uint32_t>& height, string& wall_drawing) {
     uint32_t water_trapped = 0;
     // Находим объем воды, который может быть удержан над каждой стеной
     wall_drawing = "";
-    for (int row = max(*max_element(height.begin(), height.end()), 1U); row >= 1; --row) {
-        string row_str = "";
+    for (int64_t row = max(*max_element(height.begin(), height.end()), 1U); row >= 1; --row) {
+        string row_str;
         for (int col = 0; col < n; ++col) {
             if (height[col] >= row) {
                 row_str += "# ";
@@ -182,9 +182,6 @@ ErrorType readFromFile(const string& file_path, string& invalid_word, vector<uin
                 numbers_count++;
                 if (numbers_count > 100) {
                     input_file.close();
-                    ostringstream oss;
-                    oss << numbers_count;
-                    invalid_word = oss.str();
                     return ErrorType::TooManyNumbersInFile;
                 }
             } catch (const std::invalid_argument& e) {
@@ -220,35 +217,6 @@ void writeInFile(const string &file_path, const uint32_t water, const string& wa
     output_file << water << endl << walls; // Записываем данные в файл
     output_file.close(); // Закрываем файл
     cout << "Успех!" << endl;
-}
-
-/**
- * @brief Функция drawWall рисует стену и воду между стенами в соответствии с заданными высотами.
- *
- * @param heights Вектор высот стен.
- */
-void drawWall(const vector<u_int32_t>& heights) {
-    // Находим максимальную высоту стены
-    int64_t maxHeight = *max_element(heights.begin(), heights.end());
-
-    // Перебираем строки от верхней до нижней
-    for (int64_t row = maxHeight; row >= 0; --row) {
-        // Перебираем столбцы
-        for (int col = 0; col < heights.size(); ++col) {
-            // Если высота текущей стены больше текущей строки, рисуем стену, иначе рисуем воду
-            if (heights[col] > row) {
-                cout << "# ";
-            } else {
-                // Если справа и слева есть стены выше текущей строки, рисуем воду, иначе пустое место
-                if ((col > 0 && heights[col - 1] > row) && (col < heights.size() - 1 && heights[col + 1] > row)) {
-                    cout << "~ ";
-                } else {
-                    cout << "  ";
-                }
-            }
-        }
-        cout << endl; // Переходим на следующую строку
-    }
 }
 
 
