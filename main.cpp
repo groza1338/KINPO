@@ -54,11 +54,6 @@ int main(int argc, char* argv[]) {
 }
 
 
-#include <vector>
-#include <string>
-
-using namespace std;
-
 /**
  * @brief Функция calculateWaterVolume вычисляет количество воды, которое может быть удержано между стенами.
  * Также создает рисунок стены и воды.
@@ -71,6 +66,7 @@ uint32_t calculateWaterVolume(const vector<uint32_t>& height, string& wall_drawi
     uint8_t n = height.size();
     if (n == 0) return 0; // Если массив пустой, возвращаем 0
 
+    // Создаем векторы для хранения максимальной высоты стен слева и справа от текущей позиции
     vector<uint32_t> max_left(n), max_right(n);
 
     // Находим максимальную высоту стены слева от текущей позиции
@@ -85,26 +81,29 @@ uint32_t calculateWaterVolume(const vector<uint32_t>& height, string& wall_drawi
         max_right[i] = max(max_right[i + 1], height[i]); // Вычисляем максимум между текущей высотой стены и предыдущим максимумом справа
     }
 
-    uint32_t water_trapped = 0;
+    uint32_t water_trapped = 0; // Переменная для хранения общего количества воды, которое может быть удержано
     // Находим объем воды, который может быть удержан над каждой стеной
-    wall_drawing = "";
+    wall_drawing = ""; // Строка для хранения рисунка стены и воды
+    // Проходимся по высотам, начиная с самой высокой
     for (int64_t row = max(*max_element(height.begin(), height.end()), 1U); row >= 1; --row) {
-        string row_str;
+        string row_str; // Строка для хранения текущей строки рисунка
+        // Проходимся по каждой стене в текущей строке
         for (int col = 0; col < n; ++col) {
             if (height[col] >= row) {
-                row_str += "# ";
+                row_str += "# "; // Если высота стены больше или равна текущему уровню, добавляем '#' к рисунку
             } else if ((col > 0 && height[col - 1] >= row) && (col < n - 1 && height[col + 1] >= row)) {
-                row_str += "~ ";
+                row_str += "~ "; // Если стена ниже, но с обеих сторон есть стены выше, добавляем '~' к рисунку и увеличиваем общее количество воды
                 ++water_trapped;
             } else {
-                row_str += "  ";
+                row_str += "  "; // Если нет стен слева и/или справа, добавляем пробелы к рисунку
             }
         }
-        wall_drawing += row_str + "\n";
+        wall_drawing += row_str + "\n"; // Добавляем текущую строку к рисунку стены и воды
     }
 
-    return water_trapped;
+    return water_trapped; // Возвращаем общее количество воды, которое может быть удержано между стенами
 }
+
 
 /**
  * @brief Функция getFileExtension извлекает расширение файла из переданного имени файла.
