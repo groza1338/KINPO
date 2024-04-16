@@ -5,6 +5,8 @@
 #pragma clang diagnostic ignored "-Wc++11-extensions"
 
 int main(int argc, char *argv[]) {
+    // Зафиксируем начальное время
+    auto start = chrono::steady_clock::now();
     string input_file, output_file;
 
     // Если передано недостаточно аргументов через командную строку
@@ -52,6 +54,14 @@ int main(int argc, char *argv[]) {
             writeInFile(output_file, calculateWaterVolume(numbers, wallSchema), wallSchema);
             break;
     }
+    // Зафиксируем конечное время
+    auto end = std::chrono::steady_clock::now();
+
+    // Вычислим время выполнения
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+    // Выведем результат
+    std::cout << "Время выполнения: " << duration.count() << " мс" << std::endl;
     return 0;
 }
 
@@ -65,49 +75,61 @@ int main(int argc, char *argv[]) {
  */
 uint32_t calculateWaterVolume(const vector <uint32_t> &height, string &wall_drawing) {
     uint32_t n = height.size();
-    if (n == 0) return 0; // Если массив пустой, возвращаем 0
+    if (n == 0 || n == 1) return 0;
 
-    // Создаем векторы для хранения максимальной высоты стен слева и справа от каждой позиции
-    vector <uint32_t> left_max(n), right_max(n);
-    uint32_t water_trapped = 0; // Переменная для хранения общего количества воды, которое может быть удержано
+    vector<uint32_t> left_max(n), right_max(n);
+    uint32_t water_trapped = 0;
 
-    // Находим максимальную высоту стены слева от каждой позиции
+    // Предварительное вычисление максимумов слева и справа
     left_max[0] = height[0];
     for (uint32_t i = 1; i < n; ++i) {
         left_max[i] = max(left_max[i - 1], height[i]);
     }
 
-    // Находим максимальную высоту стены справа от каждой позиции
     right_max[n - 1] = height[n - 1];
     for (int64_t i = n - 2; i >= 0; --i) {
         right_max[i] = max(right_max[i + 1], height[i]);
     }
 
-    wall_drawing = ""; // Строка для рисунка стены и воды
+    wall_drawing.clear(); // Очищаем строку рисунка
+
+    // Используем указатели для обхода вектора и флаги для управления потоком
+    const uint32_t *left_max_ptr = &left_max[0];
+    const uint32_t *right_max_ptr = &right_max[0];
 
     // Проходимся по высотам, начиная с самой высокой
     for (int64_t row = *max_element(height.begin(), height.end()); row >= 1; --row) {
-        string row_str; // Строка для хранения текущей строки рисунка
+        bool water_started = false; // Флаг, указывающий началась ли зона с водой
 
+        // Сбрасываем указатели в начало векторов максимумов
+        left_max_ptr = &left_max[0];
+        right_max_ptr = &right_max[0];
         // Проходимся по каждой стене в текущей строке
-        for (uint32_t col = 0; col < n; ++col) {
-            if (height[col] >= row) {
-                row_str += "# "; // Если высота стены больше или равна текущему уровню, добавляем '#' к рисунку
+        for (const uint32_t &h: height) {
+            if (h >= row) {
+                wall_drawing.push_back(
+                        '#'); // Добавляем '#' к рисунку, если высота стены больше или равна текущему уровню
+                wall_drawing.push_back(' ');
+                water_started = true;
             } else {
-                // Если высота стены меньше текущего уровня, но слева и справа от нее есть стены, добавляем '~' к рисунку и увеличиваем общее количество воды
-                if (col > 0 && col < n - 1 && left_max[col] >= row && right_max[col] >= row) {
-                    row_str += "~ ";
+                if (water_started && *left_max_ptr >= row && *right_max_ptr >= row) {
+                    wall_drawing.push_back(
+                            '~'); // Добавляем '~' к рисунку, если началась зона с водой и есть стены слева и справа
+                    wall_drawing.push_back(' ');
                     ++water_trapped;
                 } else {
-                    row_str += "  "; // Если нет стен слева и/или справа, добавляем пробелы к рисунку
+                    wall_drawing.push_back(' '); // Добавляем пробел к рисунку, если нет стен слева и/или справа
                 }
             }
+            ++left_max_ptr;
+            ++right_max_ptr;
         }
-        wall_drawing += row_str + "\n"; // Добавляем текущую строку к рисунку стены и воды
+        wall_drawing.push_back('\n'); // Добавляем символ новой строки к рисунку
     }
 
-    return water_trapped; // Возвращаем общее количество воды, которое может быть удержано между стенами
+    return water_trapped;
 }
+
 
 /**
  * @brief Функция getFileExtension извлекает расширение файла из переданного имени файла.
@@ -131,25 +153,12 @@ string getFileExtension(const string &filename) {
     }
 }
 
-/**
- * @brief Функция readFromFile считывает данные из файла по указанному пути и сохраняет их в векторе numbers.
- *
- * Эта функция открывает указанный файл для чтения, считывает данные из него и сохраняет их в векторе numbers.
- * При возникновении ошибок в файле, функция возвращает соответствующий тип ошибки.
- *
- * @param file_path Путь к файлу для чтения.
- * @param invalid_word Некорректное слово, встреченное в файле.
- * @param numbers Вектор, в который будут сохранены данные из файла.
- * @return ErrorType Тип ошибки (если есть) или NoError, если ошибок не было.
- */
-ErrorType readFromFile(const string &file_path, string &invalid_word, vector <uint32_t> &numbers) {
-    // Проверяем, имеет ли файл правильное расширение
+ErrorType readFromFile(const string &file_path, string &invalid_word, vector<uint32_t> &numbers) {
     if (const auto extension = getFileExtension(file_path); extension != ".txt") {
         invalid_word = extension;
         return ErrorType::NotTxtExtension;
     }
     ifstream input_file(file_path);
-    // Проверяем, успешно ли открыт файл
     if (!input_file) {
         return ErrorType::BadFile;
     }
@@ -167,18 +176,25 @@ ErrorType readFromFile(const string &file_path, string &invalid_word, vector <ui
         string word;
         while (iss >> word) {
             try {
-                size_t pos;
-                int64_t number = stoul(word, &pos);
-                // Проверяем, не выходит ли число за пределы допустимого диапазона
-                if (number > numeric_limits<uint32_t>::max()) {
+                size_t pos = 0;
+                // Парсим число только до первого неподходящего символа
+                uint32_t number;
+                try {
+                    number = stoul(word, &pos);
+                }
+                catch (const out_of_range &e) {
                     invalid_word = word;
                     input_file.close();
                     return ErrorType::OutOfRange;
                 }
-                if (number < numeric_limits<uint32_t>::min()) {
+                if (number > numeric_limits<uint32_t>::max() || number < numeric_limits<uint32_t>::min()) {
                     invalid_word = word;
                     input_file.close();
                     return ErrorType::OutOfRange;
+                }
+                // Проверяем, действительно ли было прочитано число до конца слова
+                if (pos != word.size()) {
+                    throw invalid_argument("Invalid characters after number");
                 }
                 numbers.push_back(number);
                 numbers_count++;
@@ -186,9 +202,7 @@ ErrorType readFromFile(const string &file_path, string &invalid_word, vector <ui
                     input_file.close();
                     return ErrorType::TooManyNumbersInFile;
                 }
-            }
-            catch (const std::invalid_argument &e) {
-                // Если встречено некорректное слово, возвращаем соответствующую ошибку
+            } catch (const std::invalid_argument &e) {
                 invalid_word = word;
                 input_file.close();
                 return ErrorType::NotANumber;
@@ -198,6 +212,7 @@ ErrorType readFromFile(const string &file_path, string &invalid_word, vector <ui
     input_file.close();
     return ErrorType::NoError;
 }
+
 
 /**
  * @brief Функция writeInFile записывает данные в файл по указанному пути.
