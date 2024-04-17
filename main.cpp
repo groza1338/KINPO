@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
  */
 uint32_t calculateWaterVolume(const vector <uint32_t> &wall_heights) {
     uint32_t n = wall_heights.size();
-    if (n == 0 || n == 1) return 0;
+    if (n == 0 || n == 1 || n == 2) return 0;
 
     uint32_t water_trapped = 0;
     uint32_t left_max = 0, right_max = 0;
@@ -109,10 +109,17 @@ uint32_t calculateWaterVolume(const vector <uint32_t> &wall_heights) {
  */
 string drawWallSchema(const vector <uint32_t> &heights) {
     uint32_t n = heights.size();
-    if (n == 0 || n == 1) return "";
-
-    vector<uint32_t> left_max(n), right_max(n);
-    uint32_t water_trapped = 0;
+    if (n == 0) return "";
+    string wall_drawing;
+    wall_drawing.clear(); // Очищаем строку рисунка
+    if (n == 1) {
+        for (int i = 0; i < heights[0]; i++) {
+            wall_drawing.push_back('#');
+            wall_drawing.push_back('\n');
+        }
+        return wall_drawing;
+    }
+    vector <uint32_t> left_max(n), right_max(n);
 
     // Предварительное вычисление максимумов слева и справа
     left_max[0] = heights[0];
@@ -124,8 +131,7 @@ string drawWallSchema(const vector <uint32_t> &heights) {
     for (int64_t i = n - 2; i >= 0; --i) {
         right_max[i] = max(right_max[i + 1], heights[i]);
     }
-    string wall_drawing;
-    wall_drawing.clear(); // Очищаем строку рисунка
+
 
     // Используем указатели для обхода вектора и флаги для управления потоком
     const uint32_t *left_max_ptr = &left_max[0];
