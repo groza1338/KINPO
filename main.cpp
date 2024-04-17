@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
         case ErrorType::NoError:
             // Записываем результат в выходной файл
             string wallSchema;
-            writeInFile(output_file, calculateWaterVolume(numbers), drawWallSchema(numbers));
+            writeInFile(output_file, calculateWaterVolume(numbers), '\n', drawWallSchema(numbers));
             break;
     }
     // Зафиксируем конечное время
@@ -277,19 +277,19 @@ ErrorType readFromFile(const string &file_path, string &invalid_value, vector<ui
  * Эта функция открывает указанный файл для записи и записывает в него переданные данные.
  *
  * @param file_path Путь к файлу для записи.
- * @param water Количество воды.
- * @param walls Рисунок стены и воды.
+ * @param args Переменное количество аргументов для записи в файл.
  */
-void writeInFile(const string &file_path, const uint32_t water, const string &walls) {
+template<typename... Args>
+void writeInFile(const string &file_path, Args&&... args) {
     ofstream output_file(file_path);
     if (!output_file) {
-        cerr
-                << "Ошибка: Неверно указан файл для выходных данных. Возможно, указанного расположения не существует или нет прав на запись."
-                << endl;
+        cerr << "Ошибка: Неверно указан файл для выходных данных. Возможно, указанного расположения не существует или нет прав на запись." << endl;
         return;
     }
 
-    output_file << water << endl << walls << endl; // Записываем данные в файл
+    // Записываем переданные данные в файл
+    (output_file << ... << std::forward<Args>(args)) << endl;
+
     output_file.close(); // Закрываем файл
     cout << "Успех!" << endl;
 }
