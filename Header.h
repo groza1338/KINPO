@@ -24,6 +24,6 @@ void writeInFile(const string &file_path, uint32_t water, const string& walls);
 
 string getFileExtension(const string& filename);
 
-ErrorType readFromFile(const string& file_path, string& invalid_word, vector<uint32_t>& numbers);
+ErrorType readFromFile(const string& file_path, string& invalid_value, vector<uint32_t>& numbers);
 
 #endif //GVOZDKOV_HEADER_H

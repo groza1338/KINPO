@@ -159,19 +159,18 @@ string getFileExtension(const string &filename) {
 /**
  * @brief Функция readFromFile считывает данные из файла по указанному пути и сохраняет их в векторе numbers.
  *
- * Эта функция проверяет расширение файла, открывает его для чтения и считывает данные из него.
- * Данные, являющиеся натуральными числами, сохраняются в векторе numbers.
- * При возникновении ошибок в файле или при некорректных данных, функция возвращает соответствующий тип ошибки.
+ * Эта функция открывает указанный файл для чтения, считывает данные из него и сохраняет их в векторе numbers.
+ * При возникновении ошибок в файле, функция возвращает соответствующий тип ошибки.
  *
  * @param file_path Путь к файлу для чтения.
- * @param[out] invalid_word Слово, которое не является натуральным числом или находится в некорректном формате.
- * @param[out] numbers Вектор, в который будут сохранены данные из файла.
+ * @param invalid_value Некорректное значение, встреченное в файле.
+ * @param numbers Вектор, в который будут сохранены данные из файла.
  * @return ErrorType Тип ошибки (если есть) или NoError, если ошибок не было.
  */
-ErrorType readFromFile(const string &file_path, string &invalid_word, vector<uint32_t> &numbers) {
+ErrorType readFromFile(const string &file_path, string &invalid_value, vector<uint32_t> &numbers) {
     // Проверяем расширение файла
     if (const auto extension = getFileExtension(file_path); extension != ".txt") {
-        invalid_word = extension;
+        invalid_value = extension;
         return ErrorType::NotTxtExtension;
     }
 
@@ -204,13 +203,13 @@ ErrorType readFromFile(const string &file_path, string &invalid_word, vector<uin
                     number = stoul(word, &pos);
                 }
                 catch (const out_of_range &e) {
-                    invalid_word = word;
+                    invalid_value = word;
                     input_file.close();
                     return ErrorType::OutOfRange;
                 }
                 // Проверяем, не выходит ли число за пределы допустимого диапазона uint32_t
                 if (number > numeric_limits<uint32_t>::max() || number < numeric_limits<uint32_t>::min()) {
-                    invalid_word = word;
+                    invalid_value = word;
                     input_file.close();
                     return ErrorType::OutOfRange;
                 }
@@ -228,7 +227,7 @@ ErrorType readFromFile(const string &file_path, string &invalid_word, vector<uin
                 }
             } catch (const std::invalid_argument &e) {
                 // Если встречено некорректное слово, возвращаем соответствующую ошибку
-                invalid_word = word;
+                invalid_value = word;
                 input_file.close();
                 return ErrorType::NotANumber;
             }
@@ -237,8 +236,6 @@ ErrorType readFromFile(const string &file_path, string &invalid_word, vector<uin
     input_file.close();
     return ErrorType::NoError;
 }
-
-
 
 /**
  * @brief Функция writeInFile записывает данные в файл по указанному пути.
