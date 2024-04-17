@@ -18,9 +18,9 @@ enum ErrorType {
     TooManyNumbersInFile
 };
 
-uint32_t calculateWaterVolume(const vector<uint32_t>& wall_heights, string& wall_drawing);
+string calculateWaterVolume(const vector<uint32_t>& wall_heights);
 
-void writeInFile(const string &file_path, uint32_t water, const string& walls);
+void writeInFile(const string &file_path, string water);
 
 string getFileExtension(const string& filename);
 
