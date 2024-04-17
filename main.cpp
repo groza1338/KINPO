@@ -100,7 +100,7 @@ uint32_t calculateWaterVolume(const vector <uint32_t> &height, string &wall_draw
     // Проходимся по высотам, начиная с самой высокой
     for (int64_t row = *max_element(height.begin(), height.end()); row >= 1; --row) {
         bool water_started = false; // Флаг, указывающий началась ли зона с водой
-
+        wall_drawing.push_back(' ');
         // Сбрасываем указатели в начало векторов максимумов
         left_max_ptr = &left_max[0];
         right_max_ptr = &right_max[0];
@@ -126,7 +126,10 @@ uint32_t calculateWaterVolume(const vector <uint32_t> &height, string &wall_draw
         }
         wall_drawing.push_back('\n'); // Добавляем символ новой строки к рисунку
     }
-
+    for (unsigned int i: height) {
+        wall_drawing += to_string(i);
+        wall_drawing += ' ';
+    }
     return water_trapped;
 }
 
@@ -153,31 +156,49 @@ string getFileExtension(const string &filename) {
     }
 }
 
+/**
+ * @brief Функция readFromFile считывает данные из файла по указанному пути и сохраняет их в векторе numbers.
+ *
+ * Эта функция проверяет расширение файла, открывает его для чтения и считывает данные из него.
+ * Данные, являющиеся натуральными числами, сохраняются в векторе numbers.
+ * При возникновении ошибок в файле или при некорректных данных, функция возвращает соответствующий тип ошибки.
+ *
+ * @param file_path Путь к файлу для чтения.
+ * @param[out] invalid_word Слово, которое не является натуральным числом или находится в некорректном формате.
+ * @param[out] numbers Вектор, в который будут сохранены данные из файла.
+ * @return ErrorType Тип ошибки (если есть) или NoError, если ошибок не было.
+ */
 ErrorType readFromFile(const string &file_path, string &invalid_word, vector<uint32_t> &numbers) {
+    // Проверяем расширение файла
     if (const auto extension = getFileExtension(file_path); extension != ".txt") {
         invalid_word = extension;
         return ErrorType::NotTxtExtension;
     }
+
+    // Открываем файл для чтения
     ifstream input_file(file_path);
     if (!input_file) {
         return ErrorType::BadFile;
     }
 
+    // Считываем данные из файла
     string line;
     uint8_t line_count = 0;
     uint32_t numbers_count = 0;
     while (getline(input_file, line)) {
         line_count++;
+        // Проверяем, что в файле только одна строка
         if (line_count > 1) {
             input_file.close();
             return ErrorType::ManyLinesInInputFile;
         }
+        // Обрабатываем каждое слово в строке
         istringstream iss(line);
         string word;
         while (iss >> word) {
             try {
                 size_t pos = 0;
-                // Парсим число только до первого неподходящего символа
+                // Парсим число
                 uint32_t number;
                 try {
                     number = stoul(word, &pos);
@@ -187,22 +208,26 @@ ErrorType readFromFile(const string &file_path, string &invalid_word, vector<uin
                     input_file.close();
                     return ErrorType::OutOfRange;
                 }
+                // Проверяем, не выходит ли число за пределы допустимого диапазона uint32_t
                 if (number > numeric_limits<uint32_t>::max() || number < numeric_limits<uint32_t>::min()) {
                     invalid_word = word;
                     input_file.close();
                     return ErrorType::OutOfRange;
                 }
-                // Проверяем, действительно ли было прочитано число до конца слова
+                // Проверяем, что число было считано полностью
                 if (pos != word.size()) {
                     throw invalid_argument("Invalid characters after number");
                 }
+                // Сохраняем число в векторе
                 numbers.push_back(number);
                 numbers_count++;
+                // Проверяем, что не считано слишком много чисел
                 if (numbers_count > 100) {
                     input_file.close();
                     return ErrorType::TooManyNumbersInFile;
                 }
             } catch (const std::invalid_argument &e) {
+                // Если встречено некорректное слово, возвращаем соответствующую ошибку
                 invalid_word = word;
                 input_file.close();
                 return ErrorType::NotANumber;
@@ -212,6 +237,7 @@ ErrorType readFromFile(const string &file_path, string &invalid_word, vector<uin
     input_file.close();
     return ErrorType::NoError;
 }
+
 
 
 /**

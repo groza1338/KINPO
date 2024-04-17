@@ -1,5 +1,6 @@
 #ifndef GVOZDKOV_HEADER_H
 #define GVOZDKOV_HEADER_H
+
 #include <vector>
 #include <iostream>
 #include <fstream>
