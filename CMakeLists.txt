@@ -3,6 +3,11 @@ project(Gvozdkov)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(Gvozdkov
-        main.cpp, Header.h
-)
+include_directories(src)
+
+add_subdirectory(src)
+
+add_subdirectory(test)
+
+add_subdirectory(lib/googletest)
+
