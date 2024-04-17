@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
             cerr << "Ошибка: Недопустимое расширение файла \"" << invalid_word << "\"\nДопустимое расширение: \".txt\""
                  << endl;
             break;
-        case ErrorType::BadFile:
+        case ErrorType::FileNotFound:
             cerr << "Ошибка: Неверно указан файл с входными данными. Возможно, файл не существует.";
             break;
         case ErrorType::TooManyNumbersInFile:
@@ -69,26 +69,26 @@ int main(int argc, char *argv[]) {
  * @brief Функция calculateWaterVolume вычисляет количество воды, которое может быть удержано между стенами.
  * Также создает рисунок стены и воды.
  *
- * @param height Массив высот стен.
+ * @param wall_heights Массив высот стен.
  * @param[out] wall_drawing Рисунок стены и воды.
  * @return Количество воды, которое может быть удержано между стенами.
  */
-uint32_t calculateWaterVolume(const vector <uint32_t> &height, string &wall_drawing) {
-    uint32_t n = height.size();
+uint32_t calculateWaterVolume(const vector <uint32_t> &wall_heights, string &wall_drawing) {
+    uint32_t n = wall_heights.size();
     if (n == 0 || n == 1) return 0;
 
     vector<uint32_t> left_max(n), right_max(n);
     uint32_t water_trapped = 0;
 
     // Предварительное вычисление максимумов слева и справа
-    left_max[0] = height[0];
+    left_max[0] = wall_heights[0];
     for (uint32_t i = 1; i < n; ++i) {
-        left_max[i] = max(left_max[i - 1], height[i]);
+        left_max[i] = max(left_max[i - 1], wall_heights[i]);
     }
 
-    right_max[n - 1] = height[n - 1];
+    right_max[n - 1] = wall_heights[n - 1];
     for (int64_t i = n - 2; i >= 0; --i) {
-        right_max[i] = max(right_max[i + 1], height[i]);
+        right_max[i] = max(right_max[i + 1], wall_heights[i]);
     }
 
     wall_drawing.clear(); // Очищаем строку рисунка
@@ -98,14 +98,14 @@ uint32_t calculateWaterVolume(const vector <uint32_t> &height, string &wall_draw
     const uint32_t *right_max_ptr = &right_max[0];
 
     // Проходимся по высотам, начиная с самой высокой
-    for (int64_t row = *max_element(height.begin(), height.end()); row >= 1; --row) {
+    for (int64_t row = *max_element(wall_heights.begin(), wall_heights.end()); row >= 1; --row) {
         bool water_started = false; // Флаг, указывающий началась ли зона с водой
         wall_drawing.push_back(' ');
         // Сбрасываем указатели в начало векторов максимумов
         left_max_ptr = &left_max[0];
         right_max_ptr = &right_max[0];
         // Проходимся по каждой стене в текущей строке
-        for (const uint32_t &h: height) {
+        for (const uint32_t &h: wall_heights) {
             if (h >= row) {
                 wall_drawing.push_back(
                         '#'); // Добавляем '#' к рисунку, если высота стены больше или равна текущему уровню
@@ -126,7 +126,7 @@ uint32_t calculateWaterVolume(const vector <uint32_t> &height, string &wall_draw
         }
         wall_drawing.push_back('\n'); // Добавляем символ новой строки к рисунку
     }
-    for (unsigned int i: height) {
+    for (unsigned int i: wall_heights) {
         wall_drawing += to_string(i);
         wall_drawing += ' ';
     }
@@ -157,17 +157,17 @@ string getFileExtension(const string &filename) {
 }
 
 /**
- * @brief Функция readFromFile считывает данные из файла по указанному пути и сохраняет их в векторе numbers.
+ * @brief Функция readFromFile считывает данные из файла по указанному пути и сохраняет их в векторе input_values.
  *
- * Эта функция открывает указанный файл для чтения, считывает данные из него и сохраняет их в векторе numbers.
+ * Эта функция открывает указанный файл для чтения, считывает данные из него и сохраняет их в векторе input_values.
  * При возникновении ошибок в файле, функция возвращает соответствующий тип ошибки.
  *
  * @param file_path Путь к файлу для чтения.
  * @param invalid_value Некорректное значение, встреченное в файле.
- * @param numbers Вектор, в который будут сохранены данные из файла.
+ * @param input_values Вектор, в который будут сохранены данные из файла.
  * @return ErrorType Тип ошибки (если есть) или NoError, если ошибок не было.
  */
-ErrorType readFromFile(const string &file_path, string &invalid_value, vector<uint32_t> &numbers) {
+ErrorType readFromFile(const string &file_path, string &invalid_value, vector<uint32_t> &input_values) {
     // Проверяем расширение файла
     if (const auto extension = getFileExtension(file_path); extension != ".txt") {
         invalid_value = extension;
@@ -177,7 +177,7 @@ ErrorType readFromFile(const string &file_path, string &invalid_value, vector<ui
     // Открываем файл для чтения
     ifstream input_file(file_path);
     if (!input_file) {
-        return ErrorType::BadFile;
+        return ErrorType::FileNotFound;
     }
 
     // Считываем данные из файла
@@ -218,7 +218,7 @@ ErrorType readFromFile(const string &file_path, string &invalid_value, vector<ui
                     throw invalid_argument("Invalid characters after number");
                 }
                 // Сохраняем число в векторе
-                numbers.push_back(number);
+                input_values.push_back(number);
                 numbers_count++;
                 // Проверяем, что не считано слишком много чисел
                 if (numbers_count > 100) {
