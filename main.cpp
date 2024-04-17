@@ -134,8 +134,8 @@ string drawWallSchema(const vector <uint32_t> &heights) {
 
 
     // Используем указатели для обхода вектора и флаги для управления потоком
-    const uint32_t *left_max_ptr = &left_max[0];
-    const uint32_t *right_max_ptr = &right_max[0];
+    const uint32_t *left_max_ptr;
+    const uint32_t *right_max_ptr;
 
     // Проходимся по высотам, начиная с самой высокой
     for (int64_t row = *max_element(heights.begin(), heights.end()); row >= 1; --row) {
@@ -201,7 +201,7 @@ string getFileExtension(const string &filename) {
  * @param numbers Вектор, в который будут сохранены данные из файла.
  * @return ErrorType Тип ошибки (если есть) или NoError, если ошибок не было.
  */
-ErrorType readFromFile(const string &file_path, string &invalid_value, vector<uint32_t> &numbers) {
+ErrorType readFromFile(const string &file_path, string &invalid_value, vector <uint32_t> &numbers) {
     // Проверяем расширение файла
     if (const auto extension = getFileExtension(file_path); extension != ".txt") {
         invalid_value = extension;
@@ -280,10 +280,12 @@ ErrorType readFromFile(const string &file_path, string &invalid_value, vector<ui
  * @param args Переменное количество аргументов для записи в файл.
  */
 template<typename... Args>
-void writeInFile(const string &file_path, Args&&... args) {
+void writeInFile(const string &file_path, Args &&... args) {
     ofstream output_file(file_path);
     if (!output_file) {
-        cerr << "Ошибка: Неверно указан файл для выходных данных. Возможно, указанного расположения не существует или нет прав на запись." << endl;
+        cerr
+                << "Ошибка: Неверно указан файл для выходных данных. Возможно, указанного расположения не существует или нет прав на запись."
+                << endl;
         return;
     }
 
