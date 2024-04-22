@@ -102,70 +102,53 @@ uint32_t calculateWaterVolume(const vector <uint32_t> &wall_heights) {
 }
 
 /**
- * @brief Функция drawWallSchema создает строку, представляющую рисунок стены и воды.
+ * @brief Функция рисует схему стен и воды на основе высот стен.
  *
- * @param heights Массив высот стен.
- * @return Строка, представляющая рисунок стены и воды.
+ * @param heights Вектор, содержащий высоты стен.
+ * @return Строка, представляющая схему стен и воды.
  */
-string drawWallSchema(const vector <uint32_t> &heights) {
-    uint32_t n = heights.size();
-    if (n == 0) return "";
-    string wall_drawing;
-    wall_drawing.clear(); // Очищаем строку рисунка
-    if (n == 1) {
-        for (int i = 0; i < heights[0]; i++) {
-            wall_drawing.push_back('#');
-            wall_drawing.push_back('\n');
-        }
-        return wall_drawing;
-    }
-    vector <uint32_t> left_max(n), right_max(n);
+string drawWallSchema(const vector<uint32_t> &heights) {
+    uint8_t n = heights.size(); // Количество стен
+    vector<uint32_t> maxLeft(n, 0); // Массив максимальных высот слева
+    vector<uint32_t> maxRight(n, 0); // Массив максимальных высот справа
 
-    // Предварительное вычисление максимумов слева и справа
-    left_max[0] = heights[0];
-    for (uint32_t i = 1; i < n; ++i) {
-        left_max[i] = max(left_max[i - 1], heights[i]);
+    // Заполняем массивы максимальных высот слева и справа для каждой позиции
+    uint32_t max_height = 0;
+    for (int i = 0; i < n; ++i) {
+        max_height = max(max_height, heights[i]);
+        maxLeft[i] = max_height;
+    }
+    max_height = 0;
+    for (int64_t i = n - 1; i >= 0; --i) {
+        max_height = max(max_height, heights[i]);
+        maxRight[i] = max_height;
     }
 
-    right_max[n - 1] = heights[n - 1];
-    for (int64_t i = n - 2; i >= 0; --i) {
-        right_max[i] = max(right_max[i + 1], heights[i]);
-    }
-
-
-    // Используем указатели для обхода вектора и флаги для управления потоком
-    const uint32_t *left_max_ptr;
-    const uint32_t *right_max_ptr;
-
-    // Проходимся по высотам, начиная с самой высокой
-    for (int64_t row = *max_element(heights.begin(), heights.end()); row >= 1; --row) {
-        bool water_started = false; // Флаг, указывающий началась ли зона с водой
-
-        // Сбрасываем указатели в начало векторов максимумов
-        left_max_ptr = &left_max[0];
-        right_max_ptr = &right_max[0];
-        // Проходимся по каждой стене в текущей строке
-        for (const uint32_t &h: heights) {
-            if (h >= row) {
-                wall_drawing.push_back(
-                        '#'); // Добавляем '#' к рисунку, если высота стены больше или равна текущему уровню
-                wall_drawing.push_back(' ');
-                water_started = true;
+    string schema; // Строка для хранения схемы стен и воды
+    // Проходим по каждой высоте от максимальной до 1
+    for (int64_t h = max(maxLeft.back(), maxRight.front()); h >= 1; --h) {
+        bool wallStarted = false; // Флаг, указывающий, началась ли стена
+        // Проходим по каждой позиции стены
+        for (int i = 0; i < n; ++i) {
+            // Если высота текущей стены больше или равна текущей высоте, добавляем стену к схеме
+            if (heights[i] >= h) {
+                wallStarted = true;
+                schema += "# ";
             } else {
-                if (water_started && *left_max_ptr >= row && *right_max_ptr >= row) {
-                    wall_drawing.push_back(
-                            '~'); // Добавляем '~' к рисунку, если началась зона с водой и есть стены слева и справа
-                    wall_drawing.push_back(' ');
+                // Если слева или справа от текущей позиции есть стена с высотой не менее текущей, добавляем воду к схеме
+                if ((maxLeft[i] >= h || maxRight[i] >= h) && wallStarted) {
+                    schema += "~ ";
                 } else {
-                    wall_drawing.push_back(' '); // Добавляем пробел к рисунку, если нет стен слева и/или справа
+                    // Иначе добавляем пространство к схеме
+                    schema += "  ";
                 }
             }
-            ++left_max_ptr;
-            ++right_max_ptr;
         }
-        wall_drawing.push_back('\n'); // Добавляем символ новой строки к рисунку
+        // Добавляем переход на новую строку в конец каждой высоты
+        schema += "\n";
     }
-    return wall_drawing;
+
+    return schema; // Возвращаем схему стен и воды
 }
 
 /**
