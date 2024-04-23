@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
  * @return Количество воды, которое может быть удержано между стенами.
  */
 uint32_t calculateWaterVolume(const vector <uint32_t> &wall_heights) {
-    uint32_t n = wall_heights.size();
+    uint8_t n = wall_heights.size();
     if (n == 0 || n == 1 || n == 2) return 0;
 
     uint32_t water_trapped = 0;
