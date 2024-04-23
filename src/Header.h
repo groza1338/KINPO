@@ -20,7 +20,8 @@ enum ErrorType {
     OutOfRange,
     NotTxtExtension,
     BadFile,
-    TooManyNumbersInFile
+    TooManyNumbersInFile,
+    NoNumbers,
 };
 
 uint32_t calculateWaterVolume(const vector<uint32_t> &heights);

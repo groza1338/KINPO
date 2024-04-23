@@ -48,6 +48,9 @@ int main(int argc, char *argv[]) {
         case ErrorType::TooManyNumbersInFile:
             cerr << "Ошибка: Во входном файле слишком много чисел, убедитесь, что их <= 100" << endl;
             break;
+        case ErrorType::NoNumbers:
+            cerr << "Ошибка: Во входном файле нет чисел!" << endl;
+            break;
         case ErrorType::NoError:
             // Записываем результат в выходной файл
             string wallSchema;
@@ -67,39 +70,45 @@ int main(int argc, char *argv[]) {
 
 /**
  * @brief Функция calculateWaterVolume вычисляет количество воды, которое может быть удержано между стенами.
- * Также создает рисунок стены и воды.
  *
  * @param wall_heights Массив высот стен.
  * @return Количество воды, которое может быть удержано между стенами.
  */
-uint32_t calculateWaterVolume(const vector <uint32_t> &wall_heights) {
-    uint8_t n = wall_heights.size();
-    if (n == 0 || n == 1 || n == 2) return 0;
+uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights) {
+    uint8_t n = wall_heights.size(); // Получаем количество стен
+    if (n == 0 || n == 1 || n == 2) return 0; // Если стен нет или их меньше трех, вода не удерживается
 
-    uint32_t water_trapped = 0;
-    uint32_t left_max = 0, right_max = 0;
-    uint32_t left = 0, right = n - 1;
+    uint32_t water_trapped = 0; // Переменная для хранения количества удержанной воды
+    uint32_t left_max = 0, right_max = 0; // Максимальные высоты слева и справа
+    uint32_t left = 0, right = n - 1; // Индексы левой и правой стен
 
+    // Проходим по массиву стен, пока индексы левой и правой стен не пересекутся
     while (left < right) {
+        // Если высота левой стены меньше высоты правой
         if (wall_heights[left] < wall_heights[right]) {
+            // Если высота левой стены больше или равна максимальной высоте слева,
+            // обновляем максимальную высоту слева. Иначе добавляем количество удержанной воды.
             if (wall_heights[left] >= left_max) {
                 left_max = wall_heights[left];
             } else {
                 water_trapped += left_max - wall_heights[left];
             }
-            ++left;
+            ++left; // Переходим к следующей левой стене
         } else {
+            // Если высота правой стены больше или равна максимальной высоте справа,
+            // обновляем максимальную высоту справа. Иначе добавляем количество удержанной воды.
             if (wall_heights[right] >= right_max) {
                 right_max = wall_heights[right];
             } else {
                 water_trapped += right_max - wall_heights[right];
             }
-            --right;
+            --right; // Переходим к следующей правой стене
         }
     }
 
-    return water_trapped;
+    return water_trapped; // Возвращаем количество удержанной воды
 }
+
 
 /**
  * @brief Функция рисует схему стен и воды на основе высот стен.
@@ -249,6 +258,10 @@ ErrorType readFromFile(const string &file_path, string &invalid_value, vector <u
                 return ErrorType::NotANumber;
             }
         }
+    }
+    if (numbers_count == 0) {
+        input_file.close();
+        return ErrorType::NoNumbers;
     }
     input_file.close();
     return ErrorType::NoError;
