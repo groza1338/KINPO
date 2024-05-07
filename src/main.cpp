@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Создаем вектор для хранения высот стен
-    vector <u_int32_t> numbers;
+    vector<u_int32_t> numbers;
     string invalid_value;
     // Считываем данные из входного файла
     ErrorType error = readFromFile(input_file, invalid_value, numbers);
@@ -52,9 +52,11 @@ int main(int argc, char *argv[]) {
             cerr << "Ошибка: Во входном файле нет чисел!" << endl;
             break;
         case ErrorType::NoError:
+            // Создаем вектор для хранения высот воды
+            vector<uint32_t> water_heights(numbers.size(), 0);
             // Записываем результат в выходной файл
-            string wallSchema;
-            writeInFile(output_file, calculateWaterVolume(numbers), '\n', drawWallSchema(numbers));
+            writeInFile(output_file, calculateWaterVolume(numbers, water_heights), '\n',
+                        drawWallSchema(numbers, water_heights));
             break;
     }
     // Зафиксируем конечное время
@@ -74,7 +76,7 @@ int main(int argc, char *argv[]) {
  * @param wall_heights Массив высот стен.
  * @return Количество воды, которое может быть удержано между стенами.
  */
-uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights) {
+uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint32_t> &water_heights) {
     uint8_t n = wall_heights.size(); // Получаем количество стен
     if (n == 0 || n == 1 || n == 2) return 0; // Если стен нет или их меньше трех, вода не удерживается
 
@@ -91,7 +93,8 @@ uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights) {
             if (wall_heights[left] >= left_max) {
                 left_max = wall_heights[left];
             } else {
-                water_trapped += left_max - wall_heights[left];
+                water_heights[left] = left_max - wall_heights[left];
+                water_trapped += water_heights[left];
             }
             ++left; // Переходим к следующей левой стене
         } else {
@@ -100,7 +103,8 @@ uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights) {
             if (wall_heights[right] >= right_max) {
                 right_max = wall_heights[right];
             } else {
-                water_trapped += right_max - wall_heights[right];
+                water_heights[right] = right_max - wall_heights[right];
+                water_trapped += water_heights[right];
             }
             --right; // Переходим к следующей правой стене
         }
@@ -116,49 +120,42 @@ uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights) {
  * @param heights Вектор, содержащий высоты стен.
  * @return Строка, представляющая схему стен и воды.
  */
-string drawWallSchema(const vector<uint32_t> &heights) {
-    uint8_t n = heights.size(); // Количество стен
-    vector<uint32_t> maxLeft(n, 0); // Массив максимальных высот слева
-    vector<uint32_t> maxRight(n, 0); // Массив максимальных высот справа
-
-    // Заполняем массивы максимальных высот слева и справа для каждой позиции
-    uint32_t max_height = 0;
-    for (int i = 0; i < n; ++i) {
-        max_height = max(max_height, heights[i]);
-        maxLeft[i] = max_height;
-    }
-    max_height = 0;
-    for (int64_t i = n - 1; i >= 0; --i) {
-        max_height = max(max_height, heights[i]);
-        maxRight[i] = max_height;
-    }
-
+string drawWallSchema(const vector<uint32_t> &wall_heights, vector<uint32_t> &water_heights) {
     string schema; // Строка для хранения схемы стен и воды
-    // Проходим по каждой высоте от максимальной до 1
-    for (int64_t h = max(maxLeft.back(), maxRight.front()); h >= 1; --h) {
-        bool wallStarted = false; // Флаг, указывающий, началась ли стена
-        // Проходим по каждой позиции стены
-        for (int i = 0; i < n; ++i) {
-            // Если высота текущей стены больше или равна текущей высоте, добавляем стену к схеме
-            if (heights[i] >= h) {
-                wallStarted = true;
-                schema += "# ";
-            } else {
-                // Если слева или справа от текущей позиции есть стена с высотой не менее текущей, добавляем воду к схеме
-                if ((maxLeft[i] >= h || maxRight[i] >= h) && wallStarted) {
-                    schema += "~ ";
-                } else {
-                    // Иначе добавляем пространство к схеме
-                    schema += "  ";
-                }
-            }
+
+    auto cols = wall_heights.size();
+    auto rows = *max_element(wall_heights.begin(), wall_heights.end());
+
+    vector<vector<char>> schema_array(rows, vector<char>(cols, ' ')); // Создаем пустой двумерный вектор
+
+    // Заполняем схему воздухом и водой
+    for (size_t col = 0; col < cols; ++col) { // Итерируемся по столбцам
+        uint32_t maxHeight = wall_heights[col]; // Максимальная высота текущего столбца
+
+        // Заполняем стены в текущем столбце до его максимальной высоты
+        for (size_t row = 0; row < rows && row < maxHeight; ++row) {
+            schema_array[row][col] = '#';
         }
-        // Добавляем переход на новую строку в конец каждой высоты
-        schema += "\n";
+
+        // Заполняем водой
+        for (size_t row = maxHeight; row < rows && water_heights[col] > 0; ++row) {
+            schema_array[row][col] = '~';
+            --water_heights[col];
+        }
+    }
+
+    // Преобразование двумерного вектора в строку
+    for (const auto &row: schema_array) {
+        for (char ch: row) {
+            schema.push_back(ch); // Добавляем символ в строку
+            schema.push_back(' '); // Добавляем пробел после каждого символа
+        }
+        schema.push_back('\n'); // Добавляем символ переноса строки между строками
     }
 
     return schema; // Возвращаем схему стен и воды
 }
+
 
 /**
  * @brief Функция getFileExtension извлекает расширение файла из переданного имени файла.
@@ -193,7 +190,7 @@ string getFileExtension(const string &filename) {
  * @param numbers Вектор, в который будут сохранены данные из файла.
  * @return ErrorType Тип ошибки (если есть) или NoError, если ошибок не было.
  */
-ErrorType readFromFile(const string &file_path, string &invalid_value, vector <uint32_t> &numbers) {
+ErrorType readFromFile(const string &file_path, string &invalid_value, vector<uint32_t> &numbers) {
     // Проверяем расширение файла
     if (const auto extension = getFileExtension(file_path); extension != ".txt") {
         invalid_value = extension;
