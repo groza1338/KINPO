@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
                 cerr << "Ошибка: Во входном файле слишком много чисел, убедитесь, что их <= 100" << endl;
                 break;
             case ErrorType::NoNumbers:
-                cerr << "Ошибка: Во входном файле нет чисел!" << endl;
+                cerr << "Ошибка: Во входном файле нет чисел удовлетворяющих условию!" << endl;
                 break;
         }
     }
@@ -211,7 +211,7 @@ vector<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &number
                 // Парсим число
                 uint64_t number = stoul(word, &pos);
                 // Проверяем, не выходит ли число за пределы допустимого диапазона uint32_t
-                if (number > numeric_limits<uint32_t>::max() || number < numeric_limits<uint32_t>::min()) {
+                if (number > numeric_limits<uint32_t>::max()) {
                     errors.emplace_back(ErrorType::OutOfRange, word);
                 } else if (pos != word.size()) {
                     throw invalid_argument("Invalid characters after number");
