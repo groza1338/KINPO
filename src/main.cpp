@@ -71,83 +71,73 @@ int main(int argc, char *argv[]) {
 }
 
 /**
- * @brief Функция calculateWaterVolume вычисляет количество воды, которое может быть удержано между стенами.
+ * @brief Вычисляет количество воды, которое может быть удержано между стенами.
  *
- * @param wall_heights Массив высот стен.
- * @return Количество воды, которое может быть удержано между стенами.
+ * @param wall_heights Вектор высот стен.
+ * @param water_heights Вектор для хранения высот воды.
+ * @return Общее количество воды, удерживаемой между стенами.
  */
 uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint32_t> &water_heights) {
-    uint8_t n = wall_heights.size(); // Получаем количество стен
-    if (n == 0 || n == 1 || n == 2) return 0; // Если стен нет или их меньше трех, вода не удерживается
+    uint8_t n = wall_heights.size();
+    if (n <= 2) return 0; // Не может быть удержано воды
 
-    uint32_t water_trapped = 0; // Переменная для хранения количества удержанной воды
-    uint32_t left_max = 0, right_max = 0; // Максимальные высоты слева и справа
-    uint32_t left = 0, right = n - 1; // Индексы левой и правой стен
+    vector<uint32_t> max_left(n, 0); // Массив максимальной высоты стены слева от текущей
+    vector<uint32_t> max_right(n, 0); // Массив максимальной высоты стены справа от текущей
 
-    // Проходим по массиву стен, пока индексы левой и правой стен не пересекутся
-    while (left < right) {
-        // Если высота левой стены меньше высоты правой
-        if (wall_heights[left] < wall_heights[right]) {
-            // Если высота левой стены больше или равна максимальной высоте слева,
-            // обновляем максимальную высоту слева. Иначе добавляем количество удержанной воды.
-            if (wall_heights[left] >= left_max) {
-                left_max = wall_heights[left];
-            } else {
-                water_heights[left] = left_max - wall_heights[left];
-                water_trapped += water_heights[left];
-            }
-            ++left; // Переходим к следующей левой стене
+    // Вычисляем максимальную высоту стены слева от каждой стены
+    uint32_t max_height = 0;
+    for (int i = 0; i < n; ++i) {
+        max_height = max(max_height, wall_heights[i]);
+        max_left[i] = max_height;
+    }
+
+    // Вычисляем максимальную высоту стены справа от каждой стены
+    max_height = 0;
+    for (int i = n - 1; i >= 0; --i) {
+        max_height = max(max_height, wall_heights[i]);
+        max_right[i] = max_height;
+    }
+
+    uint32_t total_water = 0;
+
+    // Вычисляем высоту воды между стенами
+    for (int i = 0; i < n; ++i) {
+        uint32_t water_level = min(max_left[i], max_right[i]) - wall_heights[i];
+        if (water_level > 0) {
+            total_water += water_level; // Увеличиваем общее количество воды
+            water_heights[i] = water_level; // Сохраняем высоту воды для текущей стены
         } else {
-            // Если высота правой стены больше или равна максимальной высоте справа,
-            // обновляем максимальную высоту справа. Иначе добавляем количество удержанной воды.
-            if (wall_heights[right] >= right_max) {
-                right_max = wall_heights[right];
-            } else {
-                water_heights[right] = right_max - wall_heights[right];
-                water_trapped += water_heights[right];
-            }
-            --right; // Переходим к следующей правой стене
+            water_heights[i] = 0;
         }
     }
 
-    return water_trapped; // Возвращаем количество удержанной воды
+    return total_water;
 }
 
-
 /**
- * @brief Функция рисует схему стен и воды на основе высот стен.
+ * @brief Создает строку, представляющую схему стен и воды.
  *
- * @param heights Вектор, содержащий высоты стен.
+ * @param wall_heights Вектор высот стен.
+ * @param water_heights Вектор высот воды.
  * @return Строка, представляющая схему стен и воды.
  */
 string drawWallSchema(const vector<uint32_t> &wall_heights, vector<uint32_t> &water_heights) {
     string schema; // Строка для хранения схемы стен и воды
 
-    auto cols = wall_heights.size();
-    auto rows = *max_element(wall_heights.begin(), wall_heights.end());
-
-    vector<vector<char>> schema_array(rows, vector<char>(cols, ' ')); // Создаем пустой двумерный вектор
+    size_t cols = wall_heights.size();
+    uint32_t max_height = *max_element(wall_heights.begin(), wall_heights.end());
 
     // Заполняем схему воздухом и водой
-    for (size_t col = 0; col < cols; ++col) { // Итерируемся по столбцам
-        uint32_t maxHeight = wall_heights[col]; // Максимальная высота текущего столбца
-
-        // Заполняем стены в текущем столбце до его максимальной высоты
-        for (size_t row = 0; row < rows && row < maxHeight; ++row) {
-            schema_array[row][col] = '#';
-        }
-
-        // Заполняем водой
-        for (size_t row = maxHeight; row < rows && water_heights[col] > 0; ++row) {
-            schema_array[row][col] = '~';
-            --water_heights[col];
-        }
-    }
-
-    // Преобразование двумерного вектора в строку
-    for (const auto &row: schema_array) {
-        for (char ch: row) {
-            schema.push_back(ch); // Добавляем символ в строку
+    for (uint32_t row = max_height; row > 0; --row) {
+        for (size_t col = 0; col < cols; ++col) {
+            if (row <= wall_heights[col]) {
+                schema.push_back('#'); // Заполняем стенами
+            } else if (row <= wall_heights[col] + water_heights[col]) {
+                schema.push_back('~'); // Заполняем водой
+                --water_heights[col];
+            } else {
+                schema.push_back(' '); // Заполняем пустым пространством
+            }
             schema.push_back(' '); // Добавляем пробел после каждого символа
         }
         schema.push_back('\n'); // Добавляем символ переноса строки между строками
@@ -156,12 +146,8 @@ string drawWallSchema(const vector<uint32_t> &wall_heights, vector<uint32_t> &wa
     return schema; // Возвращаем схему стен и воды
 }
 
-
 /**
- * @brief Функция getFileExtension извлекает расширение файла из переданного имени файла.
- *
- * Эта функция находит позицию последней точки в имени файла и извлекает подстроку,
- * начиная с позиции после последней точки, что позволяет определить расширение файла.
+ * @brief Извлекает расширение файла из переданного имени файла.
  *
  * @param filename Имя файла.
  * @return Расширение файла, включая точку (например, ".txt"), или пустая строка, если расширение отсутствует.
@@ -180,10 +166,7 @@ string getFileExtension(const string &filename) {
 }
 
 /**
- * @brief Функция readFromFile считывает данные из файла по указанному пути и сохраняет их в векторе numbers.
- *
- * Эта функция открывает указанный файл для чтения, считывает данные из него и сохраняет их в векторе numbers.
- * При возникновении ошибок в файле, функция возвращает соответствующий тип ошибки.
+ * @brief Считывает данные из файла по указанному пути и сохраняет их в векторе numbers.
  *
  * @param file_path Путь к файлу для чтения.
  * @param invalid_value Некорректное значение, встреченное в файле.
@@ -265,9 +248,7 @@ ErrorType readFromFile(const string &file_path, string &invalid_value, vector<ui
 }
 
 /**
- * @brief Функция writeInFile записывает данные в файл по указанному пути.
- *
- * Эта функция открывает указанный файл для записи и записывает в него переданные данные.
+ * @brief Записывает данные в файл по указанному пути.
  *
  * @param file_path Путь к файлу для записи.
  * @param args Переменное количество аргументов для записи в файл.
