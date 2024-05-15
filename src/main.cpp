@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
                 cerr << "Ошибка: Недопустимое расширение файла \"" << error.invalid_value << "\"\nДопустимое расширение: \".txt\""
                      << endl;
                 break;
-            case ErrorType::BadFile:
+            case ErrorType::FileNotFound:
                 cerr << "Ошибка: Неверно указан файл с входными данными. Возможно, файл не существует.";
                 break;
             case ErrorType::TooManyNumbersInFile:
@@ -53,8 +53,6 @@ int main(int argc, char *argv[]) {
                 break;
             case ErrorType::NoNumbers:
                 cerr << "Ошибка: Во входном файле нет чисел!" << endl;
-                break;
-            case ErrorType::NoError:
                 break;
         }
     }
@@ -189,7 +187,7 @@ vector<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &number
     // Открываем файл для чтения
     ifstream input_file(file_path);
     if (!input_file) {
-        errors.emplace_back(ErrorType::BadFile);
+        errors.emplace_back(ErrorType::FileNotFound);
         return errors;
     }
 
