@@ -26,38 +26,44 @@ int main(int argc, char *argv[]) {
     vector<u_int32_t> numbers;
     string invalid_value;
     // Считываем данные из входного файла
-    ErrorType error = readFromFile(input_file, invalid_value, numbers);
-    switch (error) {
-        case ErrorType::OutOfRange:
-            cerr << "Ошибка: Входной параметр \"" << invalid_value << "\" не принадлежит диапазону [0..4294967295]."
-                 << endl;
-            break;
-        case ErrorType::NotANumber:
-            cerr << "Ошибка: Входной параметр \"" << invalid_value << "\" не является натуральным числом" << endl;
-            break;
-        case ErrorType::ManyLinesInInputFile:
-            cerr << "Ошибка: Во входном файле несколько строк." << endl;
-            break;
-        case ErrorType::NotTxtExtension:
-            cerr << "Ошибка: Недопустимое расширение файла \"" << invalid_value << "\"\nДопустимое расширение: \".txt\""
-                 << endl;
-            break;
-        case ErrorType::BadFile:
-            cerr << "Ошибка: Неверно указан файл с входными данными. Возможно, файл не существует.";
-            break;
-        case ErrorType::TooManyNumbersInFile:
-            cerr << "Ошибка: Во входном файле слишком много чисел, убедитесь, что их <= 100" << endl;
-            break;
-        case ErrorType::NoNumbers:
-            cerr << "Ошибка: Во входном файле нет чисел!" << endl;
-            break;
-        case ErrorType::NoError:
-            // Создаем вектор для хранения высот воды
-            vector<uint32_t> water_heights(numbers.size(), 0);
-            // Записываем результат в выходной файл
-            writeInFile(output_file, calculateWaterVolume(numbers, water_heights), '\n',
-                        drawWallSchema(numbers, water_heights));
-            break;
+    vector<ErrorInfo> errors = readFromFile(input_file, numbers);
+
+    // Обрабатываем все ошибки
+    for (const auto &error : errors) {
+        switch (error.error_type) {
+            case ErrorType::OutOfRange:
+                cerr << "Ошибка: Входной параметр \"" << error.invalid_value << "\" не принадлежит диапазону [0..4294967295]."
+                     << endl;
+                break;
+            case ErrorType::NotANumber:
+                cerr << "Ошибка: Входной параметр \"" << error.invalid_value << "\" не является натуральным числом" << endl;
+                break;
+            case ErrorType::ManyLinesInInputFile:
+                cerr << "Ошибка: Во входном файле несколько строк." << endl;
+                break;
+            case ErrorType::NotTxtExtension:
+                cerr << "Ошибка: Недопустимое расширение файла \"" << error.invalid_value << "\"\nДопустимое расширение: \".txt\""
+                     << endl;
+                break;
+            case ErrorType::BadFile:
+                cerr << "Ошибка: Неверно указан файл с входными данными. Возможно, файл не существует.";
+                break;
+            case ErrorType::TooManyNumbersInFile:
+                cerr << "Ошибка: Во входном файле слишком много чисел, убедитесь, что их <= 100" << endl;
+                break;
+            case ErrorType::NoNumbers:
+                cerr << "Ошибка: Во входном файле нет чисел!" << endl;
+                break;
+            case ErrorType::NoError:
+                break;
+        }
+    }
+
+    if (errors.empty()) {
+        // Создаем вектор для хранения высот воды
+        vector<uint32_t> water_heights(numbers.size(), 0);
+        // Записываем результат в выходной файл
+        writeInFile(output_file, to_string(calculateWaterVolume(numbers, water_heights)) + '\n' + drawWallSchema(numbers, water_heights));
     }
     // Зафиксируем конечное время
     auto end = std::chrono::steady_clock::now();
@@ -169,21 +175,22 @@ string getFileExtension(const string &filename) {
  * @brief Считывает данные из файла по указанному пути и сохраняет их в векторе numbers.
  *
  * @param file_path Путь к файлу для чтения.
- * @param invalid_value Некорректное значение, встреченное в файле.
  * @param numbers Вектор, в который будут сохранены данные из файла.
- * @return ErrorType Тип ошибки (если есть) или NoError, если ошибок не было.
+ * @return Вектор ошибок, если они есть, иначе пустой вектор.
  */
-ErrorType readFromFile(const string &file_path, string &invalid_value, vector<uint32_t> &numbers) {
+vector<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers) {
+    vector<ErrorInfo> errors;
+
     // Проверяем расширение файла
     if (const auto extension = getFileExtension(file_path); extension != ".txt") {
-        invalid_value = extension;
-        return ErrorType::NotTxtExtension;
+        errors.emplace_back(ErrorType::NotTxtExtension, extension);
     }
 
     // Открываем файл для чтения
     ifstream input_file(file_path);
     if (!input_file) {
-        return ErrorType::BadFile;
+        errors.emplace_back(ErrorType::BadFile);
+        return errors;
     }
 
     // Считываем данные из файла
@@ -194,8 +201,8 @@ ErrorType readFromFile(const string &file_path, string &invalid_value, vector<ui
         line_count++;
         // Проверяем, что в файле только одна строка
         if (line_count > 1) {
-            input_file.close();
-            return ErrorType::ManyLinesInInputFile;
+            errors.emplace_back(ErrorType::ManyLinesInInputFile);
+            continue;
         }
         // Обрабатываем каждое слово в строке
         istringstream iss(line);
@@ -204,47 +211,34 @@ ErrorType readFromFile(const string &file_path, string &invalid_value, vector<ui
             try {
                 size_t pos = 0;
                 // Парсим число
-                uint64_t number;
-                try {
-                    number = stoul(word, &pos);
-                }
-                catch (const out_of_range &e) {
-                    invalid_value = word;
-                    input_file.close();
-                    return ErrorType::OutOfRange;
-                }
+                uint64_t number = stoul(word, &pos);
                 // Проверяем, не выходит ли число за пределы допустимого диапазона uint32_t
                 if (number > numeric_limits<uint32_t>::max() || number < numeric_limits<uint32_t>::min()) {
-                    invalid_value = word;
-                    input_file.close();
-                    return ErrorType::OutOfRange;
-                }
-                // Проверяем, что число было считано полностью
-                if (pos != word.size()) {
+                    errors.emplace_back(ErrorType::OutOfRange, word);
+                } else if (pos != word.size()) {
                     throw invalid_argument("Invalid characters after number");
-                }
-                // Сохраняем число в векторе
-                numbers.push_back(number);
-                numbers_count++;
-                // Проверяем, что не считано слишком много чисел
-                if (numbers_count > 100) {
-                    input_file.close();
-                    return ErrorType::TooManyNumbersInFile;
+                } else {
+                    // Сохраняем число в векторе
+                    numbers.push_back(number);
+                    numbers_count++;
+                    // Проверяем, что не считано слишком много чисел
+                    if (numbers_count > 100) {
+                        errors.emplace_back(ErrorType::TooManyNumbersInFile);
+                    }
                 }
             } catch (const std::invalid_argument &e) {
-                // Если встречено некорректное слово, возвращаем соответствующую ошибку
-                invalid_value = word;
-                input_file.close();
-                return ErrorType::NotANumber;
+                // Если встречено некорректное слово, добавляем соответствующую ошибку
+                errors.emplace_back(ErrorType::NotANumber, word);
+            } catch (const out_of_range &e) {
+                errors.emplace_back(ErrorType::OutOfRange, word);
             }
         }
     }
     if (numbers_count == 0) {
-        input_file.close();
-        return ErrorType::NoNumbers;
+        errors.emplace_back(ErrorType::NoNumbers);
     }
     input_file.close();
-    return ErrorType::NoError;
+    return errors;
 }
 
 /**
