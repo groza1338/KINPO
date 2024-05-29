@@ -8,6 +8,7 @@
 #include <string>
 #include <sstream>
 #include <initializer_list>
+#include <set>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wc++17-extensions"
@@ -25,10 +26,14 @@ enum class ErrorType {
 };
 
 struct ErrorInfo {
-    ErrorType error_type;
-    string invalid_value;
+    ErrorType type;
+    string detail;
 
-    explicit ErrorInfo(ErrorType type, string value = "") : error_type(type), invalid_value(std::move(value)) {}
+    ErrorInfo(ErrorType t, const string &d = "") : type(t), detail(d) {}
+
+    bool operator<(const ErrorInfo &other) const {
+        return type < other.type || (type == other.type && detail < other.detail);
+    }
 };
 
 uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint32_t> &water_heights);
@@ -36,10 +41,10 @@ uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint3
 template<typename... Args>
 void writeInFile(const string &file_path, Args&&... args);
 
-string drawWallSchema(const vector<uint32_t> &wall_heights, vector<uint32_t> &water_heights);
+string drawWallSchema(const vector<uint32_t> &wall_heights, const vector<uint32_t> &water_heights);
 
 string getFileExtension(const string &filename);
 
-vector<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers);
+set<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers);
 #pragma clang diagnostic pop
 #endif //GVOZDKOV_HEADER_H
