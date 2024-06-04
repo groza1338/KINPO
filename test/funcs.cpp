@@ -4,237 +4,85 @@
 #pragma clang diagnostic ignored "-Wc++17-extensions"
 #pragma clang diagnostic ignored "-Wc++11-extensions"
 
-
-
 /**
- * @brief Функция calculateWaterVolume вычисляет количество воды, которое может быть удержано между стенами.
- * Также создает рисунок стены и воды.
+ * @brief Вычисляет количество воды, которое может быть удержано между стенами.
  *
- * @param wall_heights Массив высот стен.
- * @return Количество воды, которое может быть удержано между стенами.
+ * @param wall_heights Вектор высот стен.
+ * @param water_heights Вектор для хранения высот воды.
+ * @return Общее количество воды, удерживаемой между стенами.
  */
-uint32_t calculateWaterVolume(const vector <uint32_t> &wall_heights) {
-    uint32_t n = wall_heights.size();
-    if (n == 0 || n == 1 || n == 2) return 0;
+uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint32_t> &water_heights) {
+    uint8_t n = wall_heights.size();
+    if (n <= 2) return 0; // Не может быть удержано воды
 
-    uint32_t water_trapped = 0;
-    uint32_t left_max = 0, right_max = 0;
-    uint32_t left = 0, right = n - 1;
+    vector<uint32_t> max_left(n, 0); // Массив максимальной высоты стены слева от текущей
+    vector<uint32_t> max_right(n, 0); // Массив максимальной высоты стены справа от текущей
 
-    while (left < right) {
-        if (wall_heights[left] < wall_heights[right]) {
-            if (wall_heights[left] >= left_max) {
-                left_max = wall_heights[left];
-            } else {
-                water_trapped += left_max - wall_heights[left];
-            }
-            ++left;
+    // Вычисляем максимальную высоту стены слева от каждой стены
+    uint32_t max_height = 0;
+    for (int i = 0; i < n; ++i) {
+        max_height = max(max_height, wall_heights[i]);
+        max_left[i] = max_height;
+    }
+
+    // Вычисляем максимальную высоту стены справа от каждой стены
+    max_height = 0;
+    for (int i = n - 1; i >= 0; --i) {
+        max_height = max(max_height, wall_heights[i]);
+        max_right[i] = max_height;
+    }
+
+    uint32_t total_water = 0;
+
+    // Вычисляем высоту воды между стенами
+    for (int i = 0; i < n; ++i) {
+        uint32_t water_level = min(max_left[i], max_right[i]) - wall_heights[i];
+        if (water_level > 0) {
+            total_water += water_level; // Увеличиваем общее количество воды
+            water_heights[i] = water_level; // Сохраняем высоту воды для текущей стены
         } else {
-            if (wall_heights[right] >= right_max) {
-                right_max = wall_heights[right];
+            water_heights[i] = 0;
+        }
+    }
+
+    return total_water;
+}
+
+/**
+ * @brief Создает строку, представляющую схему стен и воды.
+ *
+ * @param wall_heights Вектор высот стен.
+ * @param water_heights Вектор высот воды.
+ * @return Строка, представляющая схему стен и воды.
+ */
+string drawWallSchema(const vector<uint32_t> &wall_heights, const vector<uint32_t> &water_heights) {
+    string schema; // Строка для хранения схемы стен и воды
+
+    if (wall_heights.empty() || water_heights.empty() || wall_heights.size() != water_heights.size()) {
+        return schema;
+    }
+
+    size_t cols = wall_heights.size();
+    uint32_t max_height = *max_element(wall_heights.begin(), wall_heights.end());
+    vector<uint32_t> current_water_heights = water_heights; // Копируем water_heights для изменения
+
+    // Заполняем схему воздухом и водой
+    for (uint32_t row = max_height; row > 0; --row) {
+        for (size_t col = 0; col < cols; ++col) {
+            if (row <= wall_heights[col]) {
+                schema.push_back('#'); // Заполняем стенами
+            } else if (row <= wall_heights[col] + current_water_heights[col]) {
+                schema.push_back('~'); // Заполняем водой
+                --current_water_heights[col];
             } else {
-                water_trapped += right_max - wall_heights[right];
+                schema.push_back(' '); // Заполняем пустым пространством
             }
-            --right;
+            schema.push_back(' '); // Добавляем пробел после каждого символа
         }
+        schema.push_back('\n'); // Добавляем символ переноса строки между строками
     }
 
-    return water_trapped;
-}
-
-/**
- * @brief Функция drawWallSchema создает строку, представляющую рисунок стены и воды.
- *
- * @param heights Массив высот стен.
- * @return Строка, представляющая рисунок стены и воды.
- */
-string drawWallSchema(const vector <uint32_t> &heights) {
-    uint32_t n = heights.size();
-    if (n == 0) return "";
-    string wall_drawing;
-    wall_drawing.clear(); // Очищаем строку рисунка
-    if (n == 1) {
-        for (int i = 0; i < heights[0]; i++) {
-            wall_drawing.push_back('#');
-            wall_drawing.push_back('\n');
-        }
-        return wall_drawing;
-    }
-    vector <uint32_t> left_max(n), right_max(n);
-
-    // Предварительное вычисление максимумов слева и справа
-    left_max[0] = heights[0];
-    for (uint32_t i = 1; i < n; ++i) {
-        left_max[i] = max(left_max[i - 1], heights[i]);
-    }
-
-    right_max[n - 1] = heights[n - 1];
-    for (int64_t i = n - 2; i >= 0; --i) {
-        right_max[i] = max(right_max[i + 1], heights[i]);
-    }
-
-
-    // Используем указатели для обхода вектора и флаги для управления потоком
-    const uint32_t *left_max_ptr;
-    const uint32_t *right_max_ptr;
-
-    // Проходимся по высотам, начиная с самой высокой
-    for (int64_t row = *max_element(heights.begin(), heights.end()); row >= 1; --row) {
-        bool water_started = false; // Флаг, указывающий началась ли зона с водой
-
-        // Сбрасываем указатели в начало векторов максимумов
-        left_max_ptr = &left_max[0];
-        right_max_ptr = &right_max[0];
-        // Проходимся по каждой стене в текущей строке
-        for (const uint32_t &h: heights) {
-            if (h >= row) {
-                wall_drawing.push_back(
-                        '#'); // Добавляем '#' к рисунку, если высота стены больше или равна текущему уровню
-                wall_drawing.push_back(' ');
-                water_started = true;
-            } else {
-                if (water_started && *left_max_ptr >= row && *right_max_ptr >= row) {
-                    wall_drawing.push_back(
-                            '~'); // Добавляем '~' к рисунку, если началась зона с водой и есть стены слева и справа
-                    wall_drawing.push_back(' ');
-                } else {
-                    wall_drawing.push_back(' '); // Добавляем пробел к рисунку, если нет стен слева и/или справа
-                }
-            }
-            ++left_max_ptr;
-            ++right_max_ptr;
-        }
-        wall_drawing.push_back('\n'); // Добавляем символ новой строки к рисунку
-    }
-    return wall_drawing;
-}
-
-/**
- * @brief Функция getFileExtension извлекает расширение файла из переданного имени файла.
- *
- * Эта функция находит позицию последней точки в имени файла и извлекает подстроку,
- * начиная с позиции после последней точки, что позволяет определить расширение файла.
- *
- * @param filename Имя файла.
- * @return Расширение файла, включая точку (например, ".txt"), или пустая строка, если расширение отсутствует.
- */
-string getFileExtension(const string &filename) {
-    // Находим позицию последней точки в строке
-    size_t lastDotPos = filename.find_last_of('.');
-    // Если точка не найдена, значит расширение отсутствует
-    if (lastDotPos == string::npos) {
-        return "";
-    } else {
-        // Извлекаем подстроку, начиная с позиции после последней точки
-        string extension = '.' + filename.substr(lastDotPos + 1);
-        return extension;
-    }
-}
-
-/**
- * @brief Функция readFromFile считывает данные из файла по указанному пути и сохраняет их в векторе numbers.
- *
- * Эта функция открывает указанный файл для чтения, считывает данные из него и сохраняет их в векторе numbers.
- * При возникновении ошибок в файле, функция возвращает соответствующий тип ошибки.
- *
- * @param file_path Путь к файлу для чтения.
- * @param invalid_value Некорректное значение, встреченное в файле.
- * @param numbers Вектор, в который будут сохранены данные из файла.
- * @return ErrorType Тип ошибки (если есть) или NoError, если ошибок не было.
- */
-ErrorType readFromFile(const string &file_path, string &invalid_value, vector <uint32_t> &numbers) {
-    // Проверяем расширение файла
-    if (const auto extension = getFileExtension(file_path); extension != ".txt") {
-        invalid_value = extension;
-        return ErrorType::NotTxtExtension;
-    }
-
-    // Открываем файл для чтения
-    ifstream input_file(file_path);
-    if (!input_file) {
-        return ErrorType::BadFile;
-    }
-
-    // Считываем данные из файла
-    string line;
-    uint8_t line_count = 0;
-    uint32_t numbers_count = 0;
-    while (getline(input_file, line)) {
-        line_count++;
-        // Проверяем, что в файле только одна строка
-        if (line_count > 1) {
-            input_file.close();
-            return ErrorType::ManyLinesInInputFile;
-        }
-        // Обрабатываем каждое слово в строке
-        istringstream iss(line);
-        string word;
-        while (iss >> word) {
-            try {
-                size_t pos = 0;
-                // Парсим число
-                uint64_t number;
-                try {
-                    number = stoul(word, &pos);
-                }
-                catch (const out_of_range &e) {
-                    invalid_value = word;
-                    input_file.close();
-                    return ErrorType::OutOfRange;
-                }
-                // Проверяем, не выходит ли число за пределы допустимого диапазона uint32_t
-                if (number > numeric_limits<uint32_t>::max() || number < numeric_limits<uint32_t>::min()) {
-                    invalid_value = word;
-                    input_file.close();
-                    return ErrorType::OutOfRange;
-                }
-                // Проверяем, что число было считано полностью
-                if (pos != word.size()) {
-                    throw invalid_argument("Invalid characters after number");
-                }
-                // Сохраняем число в векторе
-                numbers.push_back(number);
-                numbers_count++;
-                // Проверяем, что не считано слишком много чисел
-                if (numbers_count > 100) {
-                    input_file.close();
-                    return ErrorType::TooManyNumbersInFile;
-                }
-            } catch (const std::invalid_argument &e) {
-                // Если встречено некорректное слово, возвращаем соответствующую ошибку
-                invalid_value = word;
-                input_file.close();
-                return ErrorType::NotANumber;
-            }
-        }
-    }
-    input_file.close();
-    return ErrorType::NoError;
-}
-
-/**
- * @brief Функция writeInFile записывает данные в файл по указанному пути.
- *
- * Эта функция открывает указанный файл для записи и записывает в него переданные данные.
- *
- * @param file_path Путь к файлу для записи.
- * @param args Переменное количество аргументов для записи в файл.
- */
-template<typename... Args>
-void writeInFile(const string &file_path, Args &&... args) {
-    ofstream output_file(file_path);
-    if (!output_file) {
-        cerr
-                << "Ошибка: Неверно указан файл для выходных данных. Возможно, указанного расположения не существует или нет прав на запись."
-                << endl;
-        return;
-    }
-
-    // Записываем переданные данные в файл
-    (output_file << ... << std::forward<Args>(args)) << endl;
-
-    output_file.close(); // Закрываем файл
-    cout << "Успех!" << endl;
+    return schema; // Возвращаем схему стен и воды
 }
 
 #pragma clang diagnostic pop

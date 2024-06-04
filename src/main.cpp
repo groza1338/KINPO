@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
         // Создаем вектор для хранения высот воды
         vector<uint32_t> water_heights(numbers.size(), 0);
         // Записываем результат в выходной файл
-        writeInFile(output_file, to_string(calculateWaterVolume(numbers, water_heights)) + '\n' + drawWallSchema(numbers, water_heights));
+        writeInFile(output_file, calculateWaterVolume(numbers, water_heights), drawWallSchema(numbers, water_heights));
     }
     // Зафиксируем конечное время
     auto end = std::chrono::steady_clock::now();
@@ -248,10 +248,10 @@ set<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers) 
  * @brief Записывает данные в файл по указанному пути.
  *
  * @param file_path Путь к файлу для записи.
- * @param args Переменное количество аргументов для записи в файл.
+ * @param water_volume Объем воды.
+ * @param wall_schema Строка схемы стен и воды.
  */
-template<typename... Args>
-void writeInFile(const string &file_path, Args &&... args) {
+void writeInFile(const string &file_path, uint32_t water_volume, const string &wall_schema) {
     ofstream output_file(file_path);
     if (!output_file) {
         cerr
@@ -261,10 +261,11 @@ void writeInFile(const string &file_path, Args &&... args) {
     }
 
     // Записываем переданные данные в файл
-    (output_file << ... << std::forward<Args>(args)) << endl;
+    output_file << water_volume << endl << wall_schema << endl;
 
     output_file.close(); // Закрываем файл
     cout << "Успех!" << endl;
 }
+
 
 #pragma clang diagnostic pop
