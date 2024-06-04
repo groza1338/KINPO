@@ -1,9 +1,5 @@
 #include "Header.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++17-extensions"
-#pragma clang diagnostic ignored "-Wc++11-extensions"
-
 int main(int argc, char *argv[]) {
     // Зафиксируем начальное время
     auto start = chrono::steady_clock::now();
@@ -266,6 +262,3 @@ void writeInFile(const string &file_path, uint32_t water_volume, const string &w
     output_file.close(); // Закрываем файл
     cout << "Успех!" << endl;
 }
-
-
-#pragma clang diagnostic pop

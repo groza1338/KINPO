@@ -29,7 +29,7 @@ struct ErrorInfo {
     ErrorType type;
     string detail;
 
-    ErrorInfo(ErrorType t, const string &d = "") : type(t), detail(d) {}
+    explicit ErrorInfo(ErrorType t, string d = "") : type(t), detail(std::move(d)) {}
 
     bool operator<(const ErrorInfo &other) const {
         return type < other.type || (type == other.type && detail < other.detail);
@@ -45,5 +45,6 @@ string drawWallSchema(const vector<uint32_t> &wall_heights, const vector<uint32_
 string getFileExtension(const string &filename);
 
 set<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers);
+
 #pragma clang diagnostic pop
 #endif //GVOZDKOV_HEADER_H
