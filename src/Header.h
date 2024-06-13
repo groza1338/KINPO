@@ -9,12 +9,17 @@
 #include <sstream>
 #include <initializer_list>
 #include <set>
+#include <cstdint>
+#include "chrono"
+#include "algorithm"
+#include "locale"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wc++17-extensions"
 #pragma clang diagnostic ignored "-Wc++11-extensions"
 
 using namespace std;
+
 enum class ErrorType {
     ManyLinesInInputFile,
     NotANumber,

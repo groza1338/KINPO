@@ -4,7 +4,7 @@ int main(int argc, char *argv[]) {
     // Зафиксируем начальное время
     auto start = chrono::steady_clock::now();
     string input_file, output_file;
-
+    setlocale(LC_ALL, "ru_RU.UTF-8");
     // Если передано недостаточно аргументов через командную строку
     if (argc < 3) {
         // Запросить у пользователя ввод имен файлов
@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Создаем вектор для хранения высот стен
-    vector<u_int32_t> numbers;
+    vector<uint32_t> numbers;
     string invalid_value;
     // Считываем данные из входного файла
     set<ErrorInfo> errors = readFromFile(input_file, numbers);
