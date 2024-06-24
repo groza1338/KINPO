@@ -56,8 +56,12 @@ int main(int argc, char *argv[]) {
     if (errors.empty()) {
         // Создаем вектор для хранения высот воды
         vector<uint32_t> water_heights(numbers.size(), 0);
+        // Считаем объем воды
+        auto water_volume = calculateWaterVolume(numbers, water_heights);
+        // Создаем схему стен и воды
+        auto water_schema = drawWallSchema(numbers, water_heights);
         // Записываем результат в выходной файл
-        writeInFile(output_file, calculateWaterVolume(numbers, water_heights), drawWallSchema(numbers, water_heights));
+        writeInFile(output_file, water_volume, water_schema);
     }
     // Зафиксируем конечное время
     auto end = std::chrono::steady_clock::now();
