@@ -100,8 +100,8 @@ int main(int argc, char *argv[]) {
 /**
  * @brief Вычисляет количество воды, которое может быть удержано между стенами.
  *
- * @param wall_heights Вектор высот стен.
- * @param water_heights Вектор для хранения высот воды.
+ * @param[in] wall_heights Вектор высот стен.
+ * @param[out] water_heights Вектор для хранения высот воды.
  * @return Общее количество воды, удерживаемой между стенами.
  */
 uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint32_t> &water_heights) {
@@ -144,8 +144,8 @@ uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint3
 /**
  * @brief Создает строку, представляющую схему стен и воды.
  *
- * @param wall_heights Вектор высот стен.
- * @param water_heights Вектор высот воды.
+ * @param[in] wall_heights Вектор высот стен.
+ * @param[in] water_heights Вектор высот воды.
  * @return Строка, представляющая схему стен и воды.
  */
 string drawWallSchema(const vector<uint32_t> &wall_heights, const vector<uint32_t> &water_heights) {
@@ -181,7 +181,7 @@ string drawWallSchema(const vector<uint32_t> &wall_heights, const vector<uint32_
 /**
  * @brief Извлекает расширение файла из переданного имени файла.
  *
- * @param filename Имя файла.
+ * @param[in] filename Имя файла.
  * @return Расширение файла, включая точку (например, ".txt"), или пустая строка, если расширение отсутствует.
  */
 string getFileExtension(const string &filename) {
@@ -200,8 +200,8 @@ string getFileExtension(const string &filename) {
 /**
  * @brief Считывает данные из файла по указанному пути и сохраняет их в векторе numbers.
  *
- * @param file_path Путь к файлу для чтения.
- * @param numbers Вектор, в который будут сохранены данные из файла.
+ * @param[in] file_path Путь к файлу для чтения.
+ * @param[out] numbers Вектор, в который будут сохранены данные из файла.
  * @return Вектор ошибок, если они есть, иначе пустой вектор.
  */
 set<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers) {
@@ -270,9 +270,9 @@ set<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers) 
 /**
  * @brief Записывает данные в файл по указанному пути.
  *
- * @param file_path Путь к файлу для записи.
- * @param water_volume Объем воды.
- * @param wall_schema Строка схемы стен и воды.
+ * @param[in] file_path Путь к файлу для записи.
+ * @param[in] water_volume Объем воды.
+ * @param[in] wall_schema Строка схемы стен и воды.
  */
 void writeInFile(const string &file_path, uint32_t water_volume, const string &wall_schema) {
     ofstream output_file(file_path);
