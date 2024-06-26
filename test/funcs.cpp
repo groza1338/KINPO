@@ -1,16 +1,5 @@
 #include "funcs.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++17-extensions"
-#pragma clang diagnostic ignored "-Wc++11-extensions"
-
-/**
- * @brief Вычисляет количество воды, которое может быть удержано между стенами.
- *
- * @param wall_heights Вектор высот стен.
- * @param water_heights Вектор для хранения высот воды.
- * @return Общее количество воды, удерживаемой между стенами.
- */
 uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint32_t> &water_heights) {
     uint8_t n = wall_heights.size();
     if (n <= 2) return 0; // Не может быть удержано воды
@@ -48,13 +37,6 @@ uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint3
     return total_water;
 }
 
-/**
- * @brief Создает строку, представляющую схему стен и воды.
- *
- * @param wall_heights Вектор высот стен.
- * @param water_heights Вектор высот воды.
- * @return Строка, представляющая схему стен и воды.
- */
 string drawWallSchema(const vector<uint32_t> &wall_heights, const vector<uint32_t> &water_heights) {
     string schema; // Строка для хранения схемы стен и воды
 
@@ -84,5 +66,3 @@ string drawWallSchema(const vector<uint32_t> &wall_heights, const vector<uint32_
 
     return schema; // Возвращаем схему стен и воды
 }
-
-#pragma clang diagnostic pop

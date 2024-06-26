@@ -1,13 +1,9 @@
 #ifndef GVOZDKOV_FUNCS_H
 #define GVOZDKOV_FUNCS_H
 
-#include <utility>
 #include <vector>
-#include <iostream>
-#include <fstream>
 #include <string>
-#include <sstream>
-#include <initializer_list>
+#include <cstdint>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wc++17-extensions"

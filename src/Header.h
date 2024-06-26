@@ -3,16 +3,9 @@
 
 #include <utility>
 #include <vector>
-#include <iostream>
-#include <fstream>
 #include <string>
-#include <sstream>
-#include <initializer_list>
 #include <set>
 #include <cstdint>
-#include "chrono"
-#include "algorithm"
-#include "locale"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wc++17-extensions"
@@ -51,5 +44,4 @@ string getFileExtension(const string &filename);
 
 set<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers);
 
-#pragma clang diagnostic pop
 #endif //GVOZDKOV_HEADER_H

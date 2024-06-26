@@ -1,6 +1,29 @@
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <unistd.h>
+
 #include "Header.h"
 
 int main(int argc, char *argv[]) {
+    // Проверка на аргумент --test
+    for (int i = 1; i < argc; ++i) {
+        if (std::string(argv[i]) == "--test") {
+            // Попытка запустить тесты из текущей директории
+            std::vector<char*> args;
+            args.push_back((char*)"./Gvozdkov_test");
+            args.push_back(nullptr);
+            execvp("./Gvozdkov_test", args.data());
+
+            // Если первая попытка не удалась, пробуем запустить из поддиректории test
+            args[0] = (char*)"../test/Gvozdkov_test";
+            execvp("../test/Gvozdkov_test", args.data());
+
+            // Если и эта попытка не удалась, выводим сообщение об ошибке
+            std::cerr << "Не найден файл Gvozdkov_test";
+            return 1;
+        }
+    }
     // Зафиксируем начальное время
     auto start = chrono::steady_clock::now();
     string input_file, output_file;
