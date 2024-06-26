@@ -7,7 +7,7 @@
 
 #include "Header.h"
 
-int main(int argc, char *argv[]) {
+int main(const int argc, char *argv[]) {
     // Проверка на аргумент --test
     for (int i = 1; i < argc; ++i) {
         if (std::string(argv[i]) == "--test") {
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
     vector<uint32_t> numbers;
     string invalid_value;
     // Считываем данные из входного файла
-    set<ErrorInfo> errors = readFromFile(input_file, numbers);
+    const set<ErrorInfo> errors = readFromFile(input_file, numbers);
 
     // Обрабатываем все ошибки
     for (const auto &error : errors) {
@@ -84,9 +84,9 @@ int main(int argc, char *argv[]) {
         // Создаем вектор для хранения высот воды
         vector<uint32_t> water_heights(numbers.size(), 0);
         // Считаем объем воды
-        auto water_volume = calculateWaterVolume(numbers, water_heights);
+        const auto water_volume = calculateWaterVolume(numbers, water_heights);
         // Создаем схему стен и воды
-        auto water_schema = drawWallSchema(numbers, water_heights);
+        const auto water_schema = drawWallSchema(numbers, water_heights);
         // Записываем результат в выходной файл
         writeInFile(output_file, water_volume, water_schema);
     }
@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
  * @return Общее количество воды, удерживаемой между стенами.
  */
 uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint32_t> &water_heights) {
-    uint8_t n = wall_heights.size();
+    const uint8_t n = wall_heights.size();
     if (n <= 2) return 0; // Не может быть удержано воды
 
     vector<uint32_t> max_left(n, 0); // Массив максимальной высоты стены слева от текущей
@@ -133,8 +133,7 @@ uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint3
 
     // Вычисляем высоту воды между стенами
     for (int i = 0; i < n; ++i) {
-        uint32_t water_level = min(max_left[i], max_right[i]) - wall_heights[i];
-        if (water_level > 0) {
+        if (const uint32_t water_level = min(max_left[i], max_right[i]) - wall_heights[i]; water_level > 0) {
             total_water += water_level; // Увеличиваем общее количество воды
             water_heights[i] = water_level; // Сохраняем высоту воды для текущей стены
         } else {
@@ -159,8 +158,8 @@ string drawWallSchema(const vector<uint32_t> &wall_heights, const vector<uint32_
         return schema;
     }
 
-    size_t cols = wall_heights.size();
-    uint32_t max_height = *max_element(wall_heights.begin(), wall_heights.end());
+    const size_t cols = wall_heights.size();
+    const uint32_t max_height = *max_element(wall_heights.begin(), wall_heights.end());
     vector<uint32_t> current_water_heights = water_heights; // Копируем water_heights для изменения
 
     // Заполняем схему воздухом и водой
@@ -190,9 +189,8 @@ string drawWallSchema(const vector<uint32_t> &wall_heights, const vector<uint32_
  */
 string getFileExtension(const string &filename) {
     // Находим позицию последней точки в строке
-    size_t lastDotPos = filename.find_last_of('.');
     // Если точка не найдена, значит расширение отсутствует
-    if (lastDotPos == string::npos) {
+    if (const size_t lastDotPos = filename.find_last_of('.'); lastDotPos == string::npos) {
         return "";
     } else {
         // Извлекаем подстроку, начиная с позиции после последней точки
@@ -247,9 +245,8 @@ set<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers) 
             try {
                 size_t pos = 0;
                 // Парсим число
-                uint64_t number = stoul(word, &pos);
                 // Проверяем, не выходит ли число за пределы допустимого диапазона uint32_t
-                if (number > numeric_limits<uint32_t>::max()) {
+                if (uint64_t number = stoul(word, &pos); number > numeric_limits<uint32_t>::max()) {
                     errors.emplace(ErrorType::OutOfRange, word);
                 } else if (pos != word.size()) {
                     throw invalid_argument("Invalid characters after number");
@@ -284,7 +281,7 @@ set<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers) 
  * @param[in] water_volume Объем воды.
  * @param[in] wall_schema Строка схемы стен и воды.
  */
-void writeInFile(const string &file_path, uint32_t water_volume, const string &wall_schema) {
+void writeInFile(const string &file_path, const uint32_t water_volume, const string &wall_schema) {
     ofstream output_file(file_path);
     if (!output_file) {
         cerr
