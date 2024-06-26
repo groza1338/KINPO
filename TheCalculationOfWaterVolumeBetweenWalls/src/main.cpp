@@ -212,6 +212,7 @@ set<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers) 
     // Проверяем расширение файла
     if (const auto extension = getFileExtension(file_path); extension != ".txt") {
         errors.emplace(ErrorType::NotTxtExtension, extension);
+        return errors;
     }
 
     // Открываем файл для чтения
