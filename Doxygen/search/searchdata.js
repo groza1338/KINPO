@@ -1,12 +1,13 @@
 var indexSectionsWithContent =
 {
-  0: "cdefghmnortw",
+  0: "cdefghmnortwдп",
   1: "e",
   2: "hm",
   3: "cdegmorw",
   4: "dt",
   5: "e",
-  6: "fmnot"
+  6: "fmnot",
+  7: "tдп"
 };
 
 var indexSectionNames =
@@ -17,7 +18,8 @@ var indexSectionNames =
   3: "functions",
   4: "variables",
   5: "enums",
-  6: "enumvalues"
+  6: "enumvalues",
+  7: "pages"
 };
 
 var indexSectionLabels =
@@ -28,6 +30,7 @@ var indexSectionLabels =
   3: "Функции",
   4: "Переменные",
   5: "Перечисления",
-  6: "Элементы перечислений"
+  6: "Элементы перечислений",
+  7: "Страницы"
 };
 
