@@ -97,12 +97,14 @@ $(function(){ initResizable(false); });
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
 <code>#include &lt;unistd.h&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
 <code>#include &quot;<a class="el" href="_header_8h_source.html">Header.h</a>&quot;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Функции</h2></td></tr>
-<tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97" id="r_a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
-<tr class="separator:a0ddf1224851353fc92bfbff6f499fa97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a638b85ceffac097c2aa79b76ba8c055e" id="r_a638b85ceffac097c2aa79b76ba8c055e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a638b85ceffac097c2aa79b76ba8c055e">main</a> (const int argc, char *argv[])</td></tr>
+<tr class="separator:a638b85ceffac097c2aa79b76ba8c055e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86b419e883c0fbb73cb0cf4f67e47138" id="r_a86b419e883c0fbb73cb0cf4f67e47138"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a86b419e883c0fbb73cb0cf4f67e47138">calculateWaterVolume</a> (const vector&lt; uint32_t &gt; &amp;wall_heights, vector&lt; uint32_t &gt; &amp;water_heights)</td></tr>
 <tr class="memdesc:a86b419e883c0fbb73cb0cf4f67e47138"><td class="mdescLeft">&#160;</td><td class="mdescRight">Вычисляет количество воды, которое может быть удержано между стенами.  <br /></td></tr>
 <tr class="separator:a86b419e883c0fbb73cb0cf4f67e47138"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,9 +117,9 @@ $(function(){ initResizable(false); });
 <tr class="memitem:a8c4d9395263d6b49d62f53bbf0474e2c" id="r_a8c4d9395263d6b49d62f53bbf0474e2c"><td class="memItemLeft" align="right" valign="top">set&lt; <a class="el" href="struct_error_info.html">ErrorInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8c4d9395263d6b49d62f53bbf0474e2c">readFromFile</a> (const string &amp;file_path, vector&lt; uint32_t &gt; &amp;numbers)</td></tr>
 <tr class="memdesc:a8c4d9395263d6b49d62f53bbf0474e2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Считывает данные из файла по указанному пути и сохраняет их в векторе numbers.  <br /></td></tr>
 <tr class="separator:a8c4d9395263d6b49d62f53bbf0474e2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a733c29a9c5c6d14d6966d9198e813ebd" id="r_a733c29a9c5c6d14d6966d9198e813ebd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a733c29a9c5c6d14d6966d9198e813ebd">writeInFile</a> (const string &amp;file_path, uint32_t water_volume, const string &amp;wall_schema)</td></tr>
-<tr class="memdesc:a733c29a9c5c6d14d6966d9198e813ebd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Записывает данные в файл по указанному пути.  <br /></td></tr>
-<tr class="separator:a733c29a9c5c6d14d6966d9198e813ebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0cdf1b1677876c3c585ad06a076cacb" id="r_ab0cdf1b1677876c3c585ad06a076cacb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab0cdf1b1677876c3c585ad06a076cacb">writeInFile</a> (const string &amp;file_path, const uint32_t water_volume, const string &amp;wall_schema)</td></tr>
+<tr class="memdesc:ab0cdf1b1677876c3c585ad06a076cacb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Записывает данные в файл по указанному пути.  <br /></td></tr>
+<tr class="separator:ab0cdf1b1677876c3c585ad06a076cacb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Функции</h2>
 <a id="a86b419e883c0fbb73cb0cf4f67e47138" name="a86b419e883c0fbb73cb0cf4f67e47138"></a>
@@ -208,8 +210,8 @@ $(function(){ initResizable(false); });
 
 </div>
 </div>
-<a id="a0ddf1224851353fc92bfbff6f499fa97" name="a0ddf1224851353fc92bfbff6f499fa97"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0ddf1224851353fc92bfbff6f499fa97">&#9670;&#160;</a></span>main()</h2>
+<a id="a638b85ceffac097c2aa79b76ba8c055e" name="a638b85ceffac097c2aa79b76ba8c055e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a638b85ceffac097c2aa79b76ba8c055e">&#9670;&#160;</a></span>main()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -217,7 +219,7 @@ $(function(){ initResizable(false); });
         <tr>
           <td class="memname">int main </td>
           <td>(</td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>argc</em></span>, </td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>argc</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -260,8 +262,8 @@ $(function(){ initResizable(false); });
 
 </div>
 </div>
-<a id="a733c29a9c5c6d14d6966d9198e813ebd" name="a733c29a9c5c6d14d6966d9198e813ebd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a733c29a9c5c6d14d6966d9198e813ebd">&#9670;&#160;</a></span>writeInFile()</h2>
+<a id="ab0cdf1b1677876c3c585ad06a076cacb" name="ab0cdf1b1677876c3c585ad06a076cacb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0cdf1b1677876c3c585ad06a076cacb">&#9670;&#160;</a></span>writeInFile()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -274,7 +276,7 @@ $(function(){ initResizable(false); });
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>water_volume</em></span>, </td>
+          <td class="paramtype">const uint32_t</td>          <td class="paramname"><span class="paramname"><em>water_volume</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
