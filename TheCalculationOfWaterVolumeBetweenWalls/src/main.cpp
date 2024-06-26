@@ -2,6 +2,8 @@
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
+#include <algorithm>
+#include <limits>
 
 #include "Header.h"
 

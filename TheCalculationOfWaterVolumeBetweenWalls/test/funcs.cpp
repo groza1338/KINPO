@@ -1,7 +1,10 @@
 #include "funcs.h"
 
+#include <algorithm>
+
+
 uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint32_t> &water_heights) {
-    uint8_t n = wall_heights.size();
+    const uint8_t n = wall_heights.size();
     if (n <= 2) return 0; // Не может быть удержано воды
 
     vector<uint32_t> max_left(n, 0); // Массив максимальной высоты стены слева от текущей
@@ -25,8 +28,7 @@ uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint3
 
     // Вычисляем высоту воды между стенами
     for (int i = 0; i < n; ++i) {
-        uint32_t water_level = min(max_left[i], max_right[i]) - wall_heights[i];
-        if (water_level > 0) {
+        if (const uint32_t water_level = min(max_left[i], max_right[i]) - wall_heights[i]; water_level > 0) {
             total_water += water_level; // Увеличиваем общее количество воды
             water_heights[i] = water_level; // Сохраняем высоту воды для текущей стены
         } else {
@@ -44,8 +46,8 @@ string drawWallSchema(const vector<uint32_t> &wall_heights, const vector<uint32_
         return schema;
     }
 
-    size_t cols = wall_heights.size();
-    uint32_t max_height = *max_element(wall_heights.begin(), wall_heights.end());
+    const size_t cols = wall_heights.size();
+    const uint32_t max_height = *max_element(wall_heights.begin(), wall_heights.end());
     vector<uint32_t> current_water_heights = water_heights; // Копируем water_heights для изменения
 
     // Заполняем схему воздухом и водой
