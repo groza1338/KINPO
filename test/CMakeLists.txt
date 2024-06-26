@@ -1,11 +1,34 @@
-SET(BINARY ${CMAKE_PROJECT_NAME}_test)
+# Минимальная версия CMake
+cmake_minimum_required(VERSION 3.10)
 
-file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.h *.cpp)
+# Имя проекта для тестов
+project(Gvozdkov_test)
 
-set(SOURCES ${TEST_SOURCES})
+# Указываем стандарт C++
+set(CMAKE_CXX_STANDARD 17)
 
-add_executable(${BINARY} ${TEST_SOURCES})
+# Указываем пути к заголовочным файлам
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR} ../src)
 
-add_test(NAME ${BINARY} COMMAND ${BINARY})
+# Добавляем Google Test как подмодуль
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib/googletest googletest)
 
-target_link_libraries(${BINARY} PUBLIC ${CMAKE_PROJECT_NAME}_lib gtest)
+# Добавляем исполняемый файл для тестов
+add_executable(Gvozdkov_test
+        CalculateWaterVolumeTest.cpp
+        DrawWallSchemaTest.cpp
+        funcs.cpp
+)
+
+# Линкуем Google Test и pthread
+target_link_libraries(Gvozdkov_test gtest gtest_main pthread)
+
+# Определяем каталоги для заголовочных файлов
+target_include_directories(Gvozdkov_test PUBLIC ${CMAKE_SOURCE_DIR}/src)
+
+# Включаем тестирование
+enable_testing()
+
+# Регистрация тестов
+add_test(NAME CalculateWaterVolumeTest COMMAND Gvozdkov_test)
+add_test(NAME DrawWallSchemaTest COMMAND Gvozdkov_test)
