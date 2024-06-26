@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Зафиксируем начальное время
-    auto start = chrono::steady_clock::now();
+    // auto start = chrono::steady_clock::now();
 
     // Создаем вектор для хранения высот стен
     vector<uint32_t> numbers;
@@ -89,13 +89,13 @@ int main(int argc, char *argv[]) {
         writeInFile(output_file, water_volume, water_schema);
     }
     // Зафиксируем конечное время
-    auto end = std::chrono::steady_clock::now();
+    // auto end = std::chrono::steady_clock::now();
 
     // Вычислим время выполнения
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
     // Выведем результат
-    std::cout << "Время выполнения: " << duration.count() << " мс" << std::endl;
+    // std::cout << "Время выполнения: " << duration.count() << " мс" << std::endl;
     return 0;
 }
 
@@ -236,6 +236,11 @@ set<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers) 
         istringstream iss(line);
         string word;
         while (iss >> word) {
+            // Добавляем проверку на отрицательное число
+            if (word[0] == '-') {
+                // throw out_of_range("Negative number");
+                errors.emplace(ErrorType::OutOfRange, word);
+            }
             try {
                 size_t pos = 0;
                 // Парсим число
@@ -289,5 +294,5 @@ void writeInFile(const string &file_path, uint32_t water_volume, const string &w
     output_file << water_volume << endl << wall_schema << endl;
 
     output_file.close(); // Закрываем файл
-    cout << "Успех!" << endl;
+    // cout << "Успех!" << endl;
 }
