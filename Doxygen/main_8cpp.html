@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.11.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Gvozdkov_kinpo: Файл /Users/groza_1337/CLionProjects/KINPO_2/TheCalculationOfWaterVolumeBetweenWalls/src/main.cpp</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Gvozdkov_kinpo
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.11.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Поиск',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_9e73b9eb0d55618f600dbb52a0038a9f.html">TheCalculationOfWaterVolumeBetweenWalls</a></li><li class="navelem"><a class="el" href="dir_0074fa7760ca68efbc859127b9fae46c.html">src</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Функции</a>  </div>
+  <div class="headertitle"><div class="title">Файл main.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;unistd.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="_header_8h_source.html">Header.h</a>&quot;</code><br />
+</div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Функции</h2></td></tr>
+<tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97" id="r_a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
+<tr class="separator:a0ddf1224851353fc92bfbff6f499fa97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86b419e883c0fbb73cb0cf4f67e47138" id="r_a86b419e883c0fbb73cb0cf4f67e47138"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a86b419e883c0fbb73cb0cf4f67e47138">calculateWaterVolume</a> (const vector&lt; uint32_t &gt; &amp;wall_heights, vector&lt; uint32_t &gt; &amp;water_heights)</td></tr>
+<tr class="memdesc:a86b419e883c0fbb73cb0cf4f67e47138"><td class="mdescLeft">&#160;</td><td class="mdescRight">Вычисляет количество воды, которое может быть удержано между стенами.  <br /></td></tr>
+<tr class="separator:a86b419e883c0fbb73cb0cf4f67e47138"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad64f3a2a61d3b880b42221344dcea971" id="r_ad64f3a2a61d3b880b42221344dcea971"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad64f3a2a61d3b880b42221344dcea971">drawWallSchema</a> (const vector&lt; uint32_t &gt; &amp;wall_heights, const vector&lt; uint32_t &gt; &amp;water_heights)</td></tr>
+<tr class="memdesc:ad64f3a2a61d3b880b42221344dcea971"><td class="mdescLeft">&#160;</td><td class="mdescRight">Создает строку, представляющую схему стен и воды.  <br /></td></tr>
+<tr class="separator:ad64f3a2a61d3b880b42221344dcea971"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a38d3df816a4222b0d498a7cd84b68e" id="r_a8a38d3df816a4222b0d498a7cd84b68e"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8a38d3df816a4222b0d498a7cd84b68e">getFileExtension</a> (const string &amp;filename)</td></tr>
+<tr class="memdesc:a8a38d3df816a4222b0d498a7cd84b68e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Извлекает расширение файла из переданного имени файла.  <br /></td></tr>
+<tr class="separator:a8a38d3df816a4222b0d498a7cd84b68e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c4d9395263d6b49d62f53bbf0474e2c" id="r_a8c4d9395263d6b49d62f53bbf0474e2c"><td class="memItemLeft" align="right" valign="top">set&lt; <a class="el" href="struct_error_info.html">ErrorInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8c4d9395263d6b49d62f53bbf0474e2c">readFromFile</a> (const string &amp;file_path, vector&lt; uint32_t &gt; &amp;numbers)</td></tr>
+<tr class="memdesc:a8c4d9395263d6b49d62f53bbf0474e2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Считывает данные из файла по указанному пути и сохраняет их в векторе numbers.  <br /></td></tr>
+<tr class="separator:a8c4d9395263d6b49d62f53bbf0474e2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a733c29a9c5c6d14d6966d9198e813ebd" id="r_a733c29a9c5c6d14d6966d9198e813ebd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a733c29a9c5c6d14d6966d9198e813ebd">writeInFile</a> (const string &amp;file_path, uint32_t water_volume, const string &amp;wall_schema)</td></tr>
+<tr class="memdesc:a733c29a9c5c6d14d6966d9198e813ebd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Записывает данные в файл по указанному пути.  <br /></td></tr>
+<tr class="separator:a733c29a9c5c6d14d6966d9198e813ebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Функции</h2>
+<a id="a86b419e883c0fbb73cb0cf4f67e47138" name="a86b419e883c0fbb73cb0cf4f67e47138"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86b419e883c0fbb73cb0cf4f67e47138">&#9670;&#160;</a></span>calculateWaterVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t calculateWaterVolume </td>
+          <td>(</td>
+          <td class="paramtype">const vector&lt; uint32_t &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>wall_heights</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; uint32_t &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>water_heights</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Вычисляет количество воды, которое может быть удержано между стенами. </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">wall_heights</td><td>Вектор высот стен. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">water_heights</td><td>Вектор для хранения высот воды. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Общее количество воды, удерживаемой между стенами. </dd></dl>
+
+</div>
+</div>
+<a id="ad64f3a2a61d3b880b42221344dcea971" name="ad64f3a2a61d3b880b42221344dcea971"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad64f3a2a61d3b880b42221344dcea971">&#9670;&#160;</a></span>drawWallSchema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">string drawWallSchema </td>
+          <td>(</td>
+          <td class="paramtype">const vector&lt; uint32_t &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>wall_heights</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const vector&lt; uint32_t &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>water_heights</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Создает строку, представляющую схему стен и воды. </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">wall_heights</td><td>Вектор высот стен. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">water_heights</td><td>Вектор высот воды. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Строка, представляющая схему стен и воды. </dd></dl>
+
+</div>
+</div>
+<a id="a8a38d3df816a4222b0d498a7cd84b68e" name="a8a38d3df816a4222b0d498a7cd84b68e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a38d3df816a4222b0d498a7cd84b68e">&#9670;&#160;</a></span>getFileExtension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">string getFileExtension </td>
+          <td>(</td>
+          <td class="paramtype">const string &amp;</td>          <td class="paramname"><span class="paramname"><em>filename</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Извлекает расширение файла из переданного имени файла. </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">filename</td><td>Имя файла. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Расширение файла, включая точку (например, ".txt"), или пустая строка, если расширение отсутствует. </dd></dl>
+
+</div>
+</div>
+<a id="a0ddf1224851353fc92bfbff6f499fa97" name="a0ddf1224851353fc92bfbff6f499fa97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ddf1224851353fc92bfbff6f499fa97">&#9670;&#160;</a></span>main()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int main </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>argc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>argv</em></span>[]&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8c4d9395263d6b49d62f53bbf0474e2c" name="a8c4d9395263d6b49d62f53bbf0474e2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c4d9395263d6b49d62f53bbf0474e2c">&#9670;&#160;</a></span>readFromFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">set&lt; <a class="el" href="struct_error_info.html">ErrorInfo</a> &gt; readFromFile </td>
+          <td>(</td>
+          <td class="paramtype">const string &amp;</td>          <td class="paramname"><span class="paramname"><em>file_path</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; uint32_t &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>numbers</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Считывает данные из файла по указанному пути и сохраняет их в векторе numbers. </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">file_path</td><td>Путь к файлу для чтения. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">numbers</td><td>Вектор, в который будут сохранены данные из файла. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Вектор ошибок, если они есть, иначе пустой вектор. </dd></dl>
+
+</div>
+</div>
+<a id="a733c29a9c5c6d14d6966d9198e813ebd" name="a733c29a9c5c6d14d6966d9198e813ebd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a733c29a9c5c6d14d6966d9198e813ebd">&#9670;&#160;</a></span>writeInFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void writeInFile </td>
+          <td>(</td>
+          <td class="paramtype">const string &amp;</td>          <td class="paramname"><span class="paramname"><em>file_path</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>water_volume</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const string &amp;</td>          <td class="paramname"><span class="paramname"><em>wall_schema</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Записывает данные в файл по указанному пути. </p>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">file_path</td><td>Путь к файлу для записи. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">water_volume</td><td>Объем воды. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">wall_schema</td><td>Строка схемы стен и воды. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Создано системой&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.11.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
