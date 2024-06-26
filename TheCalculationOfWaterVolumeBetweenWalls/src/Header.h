@@ -1,15 +1,12 @@
 #ifndef GVOZDKOV_HEADER_H
 #define GVOZDKOV_HEADER_H
 
-#include <utility>
 #include <vector>
 #include <string>
 #include <set>
 #include <cstdint>
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++17-extensions"
-#pragma clang diagnostic ignored "-Wc++11-extensions"
+#include <algorithm>
+#include <chrono>
 
 using namespace std;
 

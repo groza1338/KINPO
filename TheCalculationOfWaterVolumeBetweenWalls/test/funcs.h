@@ -4,10 +4,7 @@
 #include <vector>
 #include <string>
 #include <cstdint>
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++17-extensions"
-#pragma clang diagnostic ignored "-Wc++11-extensions"
+#include <algorithm>
 
 using namespace std;
 
@@ -15,5 +12,4 @@ uint32_t calculateWaterVolume(const vector<uint32_t> &wall_heights, vector<uint3
 
 string drawWallSchema(const vector<uint32_t> &wall_heights, const vector<uint32_t> &water_heights);
 
-#pragma clang diagnostic pop
 #endif //GVOZDKOV_FUNCS_H
