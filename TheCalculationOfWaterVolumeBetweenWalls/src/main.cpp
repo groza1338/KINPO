@@ -24,8 +24,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     }
-    // Зафиксируем начальное время
-    auto start = chrono::steady_clock::now();
+
     string input_file, output_file;
     setlocale(LC_ALL, "ru_RU.UTF-8");
     // Если передано недостаточно аргументов через командную строку
@@ -40,6 +39,9 @@ int main(int argc, char *argv[]) {
         input_file = argv[1];
         output_file = argv[2];
     }
+
+    // Зафиксируем начальное время
+    auto start = chrono::steady_clock::now();
 
     // Создаем вектор для хранения высот стен
     vector<uint32_t> numbers;
