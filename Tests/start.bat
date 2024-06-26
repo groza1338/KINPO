@@ -263,7 +263,7 @@ echo ------------------->> %file%
 
 set num=04
 echo.  >> %file%
-echo input%num%.txt - Между стенами 2 ямы. >> %file%
+echo input%num%.txt - Между стенами две ямы. >> %file%
 echo.  >> %file%
 
 echo ____________input%num%.txt____________ >> %file%

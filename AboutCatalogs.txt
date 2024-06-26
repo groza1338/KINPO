@@ -1,0 +1,28 @@
+# О данном каталоге и подкаталогах
+
+## Данный каталог содержит программу [TheCalculationOfWaterVolumeBetweenWalls](TheCalculationOfWaterVolumeBetweenWalls) и информацию о ней
+
+### Подкаталог [Documents](Documents):
+- внешняя спецификация программы
+- внутренняя спецификация программы
+- методика тестирования функций программы
+
+### Подкаталог [Doxygen](Doxygen):
+- сгенерированная документация программы
+
+### Подкаталог [Executable](Executable):
+- [README.txt](Executable/README.txt) (о работе программы)
+- [Gvozdkov_run.exe](Executable%2FGvozdkov_run.exe) (основная программа)
+- [Gvozdkov_test.exe](Executable%2FGvozdkov_test.exe) (программа с модульными тестами)
+
+### Подкаталог [TheCalculationOfWaterVolumeBetweenWalls](TheCalculationOfWaterVolumeBetweenWalls):
+- [src](TheCalculationOfWaterVolumeBetweenWalls%2Fsrc) - папка с исходным кодом
+- [test](TheCalculationOfWaterVolumeBetweenWalls%2Ftest) - папка с модульными тестами
+- [lib](TheCalculationOfWaterVolumeBetweenWalls%2Flib) - библиотека GoogleTest
+- [build](TheCalculationOfWaterVolumeBetweenWalls%2Fbuild) - здесь хранятся собранные исходники под Windows 
+
+### Подкаталог [Tests](Tests):
+- [AboutBatFiles.txt](Tests/AboutBatFiles.txt) (о работе с бат-файлами)
+- [Tests/start.bat](start.bat) (запуск бат-файлов)
+- [Tests/Errors](Error) (файлы с ошибочными входными данными)
+- [Tests/Input](Input) (файлы с входными данными)
