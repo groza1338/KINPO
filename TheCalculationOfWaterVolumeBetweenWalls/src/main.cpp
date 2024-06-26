@@ -1,3 +1,23 @@
+/**
+* \file
+* \brief Данный файл содержит главную функцию программы TheCalculationOfWaterVolumeBetweenWalls.
+*
+* \mainpage Документация для программы "TheCalculationOfWaterVolumeBetweenWalls"
+Программа предназначена для осуществления расчета объема воды который может быть удержан между стен.
+Для функционирования программы необходима операционная система Windows 7 или выше.
+Программа разработана на языке С++ с использованием стандартных библиотек C++.
+Программа должна получать два аргумента командной строки: имя входного файла и имя выходного файла в формате 'txt', или один аргумент командной строки: --test.
+
+Пример команды запуска программы:
+* \code
+./Gvozdkov_run.exe ./input.txt ./output.txt
+* \endcode
+
+* \author Gvozdkov Sergey
+* \date June 2024
+* \version 1.0
+*/
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
