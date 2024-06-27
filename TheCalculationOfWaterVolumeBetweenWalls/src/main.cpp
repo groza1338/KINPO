@@ -67,7 +67,7 @@ int main(const int argc, char *argv[]) {
 
     // Создаем вектор для хранения высот стен
     vector<uint32_t> numbers;
-    string invalid_value;
+    // string invalid_value;
     // Считываем данные из входного файла
     const set<ErrorInfo> errors = readFromFile(input_file, numbers);
 
@@ -79,7 +79,7 @@ int main(const int argc, char *argv[]) {
                      << endl;
                 break;
             case ErrorType::NotANumber:
-                cerr << "Ошибка: Входной параметр \"" << error.detail << "\" не является натуральным числом" << endl;
+                cerr << "Ошибка: Входной параметр \"" << error.detail << "\" не является числом" << endl;
                 break;
             case ErrorType::ManyLinesInInputFile:
                 cerr << "Ошибка: Во входном файле несколько строк." << endl;
@@ -224,7 +224,7 @@ string getFileExtension(const string &filename) {
  *
  * @param[in] file_path Путь к файлу для чтения.
  * @param[out] numbers Вектор, в который будут сохранены данные из файла.
- * @return Вектор ошибок, если они есть, иначе пустой вектор.
+ * @return Set ошибок, если они есть, иначе пустой set.
  */
 set<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers) {
     set<ErrorInfo> errors;
@@ -251,22 +251,16 @@ set<ErrorInfo> readFromFile(const string &file_path, vector<uint32_t> &numbers) 
         // Проверяем, что в файле только одна строка
         if (line_count > 1) {
             errors.emplace(ErrorType::ManyLinesInInputFile);
-            continue;
         }
         // Обрабатываем каждое слово в строке
         istringstream iss(line);
         string word;
         while (iss >> word) {
-            // Добавляем проверку на отрицательное число
-            if (word[0] == '-') {
-                // throw out_of_range("Negative number");
-                errors.emplace(ErrorType::OutOfRange, word);
-            }
             try {
                 size_t pos = 0;
                 // Парсим число
                 // Проверяем, не выходит ли число за пределы допустимого диапазона uint32_t
-                if (uint64_t number = stoul(word, &pos); number > numeric_limits<uint32_t>::max()) {
+                if (int64_t number = stoll(word, &pos); number > numeric_limits<uint32_t>::max() || number < numeric_limits<uint32_t>::min()) {
                     errors.emplace(ErrorType::OutOfRange, word);
                 } else if (pos != word.size()) {
                     throw invalid_argument("Invalid characters after number");
