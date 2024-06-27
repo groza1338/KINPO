@@ -75,24 +75,24 @@ int main(const int argc, char *argv[]) {
     for (const auto &error : errors) {
         switch (error.type) {
             case ErrorType::OutOfRange:
-                cerr << "Ошибка: Входной параметр \"" << error.detail << "\" не принадлежит диапазону [0..4294967295]."
+                cerr << "Ошибка: Число \"" << error.detail << "\" не принадлежит диапазону [0..4294967295]."
                      << endl;
                 break;
             case ErrorType::NotANumber:
-                cerr << "Ошибка: Входной параметр \"" << error.detail << "\" не является числом" << endl;
+                cerr << "Ошибка: Входной параметр \"" << error.detail << "\" не является целым числом в диапазоне [0..4294967295]." << endl;
                 break;
             case ErrorType::ManyLinesInInputFile:
                 cerr << "Ошибка: Во входном файле несколько строк." << endl;
                 break;
             case ErrorType::NotTxtExtension:
-                cerr << "Ошибка: Недопустимое расширение файла \"" << error.detail << "\"\nДопустимое расширение: \".txt\""
+                cerr << "Ошибка: Недопустимое расширение файла \"" << error.detail << "\"\nДопустимое расширение: \".txt\"."
                      << endl;
                 break;
             case ErrorType::FileNotFound:
                 cerr << "Ошибка: Неверно указан файл с входными данными. Возможно, файл не существует.";
                 break;
             case ErrorType::TooManyNumbersInFile:
-                cerr << "Ошибка: Во входном файле слишком много чисел, убедитесь, что их <= 100" << endl;
+                cerr << "Ошибка: Во входном файле слишком много чисел, убедитесь, что их <= 100." << endl;
                 break;
             case ErrorType::NoNumbers:
                 cerr << "Ошибка: Во входном файле нет чисел удовлетворяющих условию!" << endl;
